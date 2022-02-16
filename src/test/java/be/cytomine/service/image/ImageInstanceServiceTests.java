@@ -65,7 +65,7 @@ public class ImageInstanceServiceTests {
         ImageInstance imageInstance2 = builder.given_an_image_instance();
         builder.persistAndReturn(imageInstance2);
 
-        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0, 0, false);
+        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0L, 0L, false);
 
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
         assertThat(page.getContent().stream().map(x -> x.get("id")).collect(Collectors.toList())).contains(imageInstance1.getId());
@@ -78,7 +78,7 @@ public class ImageInstanceServiceTests {
         NestedImageInstance nestedImageInstance1 = builder.given_a_nested_image_instance();
         nestedImageInstance1.setProject(imageInstance1.getProject());
         builder.persistAndReturn(nestedImageInstance1);
-        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0, 0, false);
+        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0L, 0L, false);
 
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
         assertThat(page.getContent().stream().map(x -> x.get("id")).collect(Collectors.toList())).contains(imageInstance1.getId());
@@ -102,7 +102,7 @@ public class ImageInstanceServiceTests {
         ImageInstance imageInstance2 = builder.given_an_image_instance();
         builder.persistAndReturn(imageInstance2);
 
-        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0, 0, true);
+        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0L, 0L, true);
 
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
         assertThat(page.getContent().stream().map(x -> x.get("id")).collect(Collectors.toList())).contains(imageInstance1.getId());
@@ -117,7 +117,7 @@ public class ImageInstanceServiceTests {
         nestedImageInstance1.setProject(imageInstance1.getProject());
         builder.persistAndReturn(nestedImageInstance1);
 
-        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0, 0, true);
+        Page<Map<String, Object>> page = imageInstanceService.list(imageInstance1.getProject(), new ArrayList<>(), "id", "asc", 0L, 0L, true);
 
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
         assertThat(page.getContent().stream().map(x -> x.get("id")).collect(Collectors.toList())).contains(imageInstance1.getId());

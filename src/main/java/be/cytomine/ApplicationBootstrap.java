@@ -88,8 +88,9 @@ class ApplicationBootstrap implements ApplicationListener<ApplicationReadyEvent>
         SecUser secUser = secUserRepository.findByUsernameLikeIgnoreCase("admin").orElse(null);
         if (secUser!=null) {
             secUser.setPassword(passwordEncoder.encode("password"));
+            secUserRepository.save(secUser);
         }
-        secUserRepository.save(secUser);
+
 
         // TODO: print config
         log.info ("#############################################################################");
