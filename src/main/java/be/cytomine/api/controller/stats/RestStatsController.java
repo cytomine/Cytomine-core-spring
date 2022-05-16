@@ -70,7 +70,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "true") Boolean leafOnly
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
         Date endDate = endDateLong != null ? new Date(endDateLong) : null;
         return responseSuccess(statsService.statTerm(project, startDate, endDate, leafOnly));
@@ -83,7 +83,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(value = "endDate", required = false) Long endDateLong
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
         Date endDate = endDateLong != null ? new Date(endDateLong) : null;
         return responseSuccess(statsService.statUser(project, startDate, endDate));
@@ -96,7 +96,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(value = "endDate", required = false) Long endDateLong
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
         Date endDate = endDateLong != null ? new Date(endDateLong) : null;
         return responseSuccess(statsService.statTermSlide(project, startDate, endDate));
@@ -110,7 +110,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(value = "endDate", required = false) Long endDateLong
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
         Date endDate = endDateLong != null ? new Date(endDateLong) : null;
         return responseSuccess(statsService.statUserSlide(project, startDate, endDate));
@@ -122,7 +122,7 @@ public class RestStatsController extends RestCytomineController {
             @PathVariable("project") Long projectId
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(statsService.statUserAnnotations(project));
     }
 
@@ -139,12 +139,12 @@ public class RestStatsController extends RestCytomineController {
 
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         Term term = null;
         if (termId !=null) {
             term = termRepository.findById(termId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Term", termId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", termId));
         }
 
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
@@ -167,12 +167,12 @@ public class RestStatsController extends RestCytomineController {
 
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         Term term = null;
         if (termId !=null) {
             term = termRepository.findById(termId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Term", termId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", termId));
         }
 
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
@@ -195,12 +195,12 @@ public class RestStatsController extends RestCytomineController {
 
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         Term term = null;
         if (termId !=null) {
             term = termRepository.findById(termId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Term", termId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", termId));
         }
 
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
@@ -217,7 +217,7 @@ public class RestStatsController extends RestCytomineController {
     ) {
 
         Term term = termRepository.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Term", id));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", id));
         securityACLService.check(term.container(),READ);
         return responseSuccess(statsService.statAnnotationTermedByProject(term));
     }
@@ -237,7 +237,7 @@ public class RestStatsController extends RestCytomineController {
         try {
             return responseSuccess(JsonObject.of("total", statsService.total(Class.forName(domain))));
         } catch (ClassNotFoundException e) {
-            throw new ObjectNotFoundException("Class", domain);
+            throw ObjectNotFoundException.notFoundException("Class", domain);
         }
     }
 
@@ -268,7 +268,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(value = "accumulate", required = false, defaultValue = "true") Boolean accumulate
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         securityACLService.check(project, READ);
 
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
@@ -287,7 +287,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(value = "accumulate", required = false, defaultValue = "true") Boolean accumulate
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         securityACLService.check(project, READ);
 
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;
@@ -309,7 +309,7 @@ public class RestStatsController extends RestCytomineController {
             @RequestParam(required = false) String type
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         securityACLService.check(project, READ);
 
         Date startDate = startDateLong != null ? new Date(startDateLong) : null;

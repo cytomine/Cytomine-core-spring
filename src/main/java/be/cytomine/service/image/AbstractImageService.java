@@ -23,10 +23,7 @@ import be.cytomine.domain.image.server.Storage;
 import be.cytomine.domain.meta.AttachedFile;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
-import be.cytomine.exceptions.ConstraintException;
-import be.cytomine.exceptions.ForbiddenException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.image.*;
 import be.cytomine.repository.meta.AttachedFileRepository;
 import be.cytomine.service.CurrentRoleService;
@@ -126,7 +123,7 @@ public class AbstractImageService extends ModelService {
 
     public Optional<AbstractImage> findByUploadedFile(Long id) {
         UploadedFile uploadedFile = uploadedFileRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UploadedFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UploadedFile", id));
         Optional<AbstractImage> abstractImage = abstractImageRepository.findAllByUploadedFile(uploadedFile).stream().findAny();
         abstractImage.ifPresent(image -> securityACLService.check(image.container(),READ));
         return abstractImage;
@@ -138,7 +135,8 @@ public class AbstractImageService extends ModelService {
 
 
     public SecUser getImageUploader(Long abstractImageId) {
-        AbstractImage abstractImage = find(abstractImageId).orElseThrow(() -> new ObjectNotFoundException("AbstractImage", abstractImageId));
+        AbstractImage abstractImage = find(abstractImageId)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage", abstractImageId));
         return Optional.ofNullable(abstractImage.getUploadedFile()).map(UploadedFile::getUser).orElse(null);
     }
 
@@ -146,7 +144,9 @@ public class AbstractImageService extends ModelService {
      * Check if some instances of this image exists and are still active
      */
     public boolean isAbstractImageUsed(Long abstractImageId) {
-        AbstractImage domain = find(abstractImageId).orElseThrow(() -> new ObjectNotFoundException("AbstractImage", abstractImageId));
+        AbstractImage domain = find(abstractImageId)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage", abstractImageId));
+
         return isAbstractImageUsed(domain);
     }
 
@@ -320,7 +320,7 @@ public class AbstractImageService extends ModelService {
      */
 //    @Deprecated
 //    List<String> imageServers(Long abstractImageId) {
-//        AbstractImage image = find(abstractImageId).orElseThrow(() -> new ObjectNotFoundException("AbstractImage", abstractImageId));
+//        AbstractImage image = find(abstractImageId).orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage" , abstractImageId));
 //        AbstractSlice slice = getReferenceSlice();
 //        return [imageServersURLs : [slice?.uploadedFile?.imageServer?.url + "/slice/tile?zoomify=" + slice?.path]]
 //    }

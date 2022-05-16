@@ -62,7 +62,7 @@ public class RestSliceInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to list slice instance for image {}", id);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , id));
         return responseSuccess(sliceInstanceService.list(imageInstance));
     }
 
@@ -74,7 +74,7 @@ public class RestSliceInstanceController extends RestCytomineController {
         log.debug("REST request to get slice instance {}", id);
         return sliceInstanceService.find(id)
                 .map(this::responseSuccess)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
     }
 
 
@@ -87,10 +87,10 @@ public class RestSliceInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to get slice instance for  image {} and coordinates {}-{}-{}", id, channel, zStack, time);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , id));
 
         SliceInstance sliceInstance = sliceInstanceService.find(imageInstance, channel,zStack, time)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id + "[" + channel + "-" + zStack + "-" + time + "]"));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance [" + channel + "-" + zStack + "-" + time + "]" , id));
         return responseSuccess(sliceInstance);
     }
     
@@ -140,7 +140,7 @@ public class RestSliceInstanceController extends RestCytomineController {
         thumbParameter.setRefresh(refresh);
 
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
         responseByteArray(imageServerService.thumb(sliceInstance, thumbParameter), format);
     }
 
@@ -176,7 +176,7 @@ public class RestSliceInstanceController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a slice instance");
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -228,7 +228,7 @@ public class RestSliceInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(withExterior);
         windowParameter.setFormat(format);
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
         String url = imageServerService.windowUrl(sliceInstance.getBaseSlice(), windowParameter);
         return responseSuccess(JsonObject.of("url", url));
     }
@@ -252,7 +252,7 @@ public class RestSliceInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(withExterior);
         windowParameter.setFormat(format);
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
 
         //TODO:
 //        if (params.mask || params.alphaMask || params.alphaMask || params.draw || params.type in ['draw', 'mask', 'alphaMask', 'alphamask'])
@@ -278,7 +278,7 @@ public class RestSliceInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(false);
         windowParameter.setFormat(format);
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
         String url = imageServerService.windowUrl(sliceInstance.getBaseSlice(), windowParameter);
         return responseSuccess(JsonObject.of("url", url));
     }
@@ -301,7 +301,7 @@ public class RestSliceInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(false);
         windowParameter.setFormat(format);
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
         responseByteArray(imageServerService.window(sliceInstance.getBaseSlice(), windowParameter), format);
     }
 

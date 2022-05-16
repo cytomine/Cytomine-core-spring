@@ -19,6 +19,7 @@ package be.cytomine.service.utils;
 import be.cytomine.domain.CytomineDomain;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.AnnotationListing;
 import be.cytomine.repository.security.SecUserRepository;
@@ -181,7 +182,7 @@ public class ParamsService {
         }
 
         if(propertiesToPrint.isEmpty()) {
-            throw new ObjectNotFoundException("You must ask at least one properties group for request.");
+            throw new ObjectNotFoundException("You must ask at least one properties group for request.", ErrorCode.NOT_FOUND_ASK_PROPERTIES.getValue());
         }
 
         return propertiesToPrint;

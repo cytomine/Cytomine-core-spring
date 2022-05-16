@@ -24,6 +24,7 @@ import be.cytomine.domain.ontology.AnnotationDomain;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.AlreadyExistException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.exceptions.WrongArgumentException;
 import be.cytomine.repository.meta.DescriptionRepository;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -89,7 +91,7 @@ public class DescriptionService extends ModelService {
     public Optional<Description> findByDomain(String domainClassName, Long domainIdent) {
         if (domainClassName.contains("AnnotationDomain")) {
             AnnotationDomain annotation = annotationDomainRepository.findById(domainIdent)
-                    .orElseThrow(() -> new ObjectNotFoundException("AnnotationDomain", domainIdent));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("AnnotationDomain", domainIdent));
             domainClassName = annotation.getClass().getName();
         }
         securityACLService.check(domainIdent, domainClassName, READ);
@@ -103,7 +105,7 @@ public class DescriptionService extends ModelService {
             securityACLService.checkIsNotReadOnly(jsonObject.getJSONAttrLong("domainIdent"),jsonObject.getJSONAttrStr("domainClassName"));
         } else if(jsonObject.getJSONAttrStr("domainClassName").contains("AnnotationDomain")){
             AnnotationDomain annotation = annotationDomainRepository.findById(jsonObject.getJSONAttrLong("domainIdent"))
-                    .orElseThrow(() -> new ObjectNotFoundException("AnnotationDomain", jsonObject.getJSONAttrLong("domainIdent")));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("AnnotationDomain", jsonObject.getJSONAttrLong("domainIdent")));
             jsonObject.put("domainClassName", annotation.getClass().getName());
             securityACLService.check(jsonObject.getJSONAttrLong("domainIdent"),annotation.getClass().getName(),READ);
             securityACLService.checkFullOrRestrictedForOwner(jsonObject.getJSONAttrLong("domainIdent"),annotation.getClass().getName(), "user");
@@ -169,11 +171,16 @@ public class DescriptionService extends ModelService {
             if (description!=null) {
                 return description;
             } else {
-                throw new ObjectNotFoundException("Description not found for domain "+json.getJSONAttrStr("domainClassName") +" " + json.getJSONAttrLong("domainIdent"));
+                throw new ObjectNotFoundException(
+                        "Description not found for domain "+json.getJSONAttrStr("domainClassName") +" " + json.getJSONAttrLong("domainIdent"),
+                        ErrorCode.NOT_FOUND_DESCRIPTION.getValue(),
+                        Map.of("domainClass", json.getJSONAttrStr("domainClassName"), "id", json.getJSONAttrLong("domainIdent")));
             }
         } catch (ClassNotFoundException e) {
-            throw new ObjectNotFoundException("Description not found for domain "+json.getJSONAttrStr("domainClassName") +" " + json.getJSONAttrLong("domainIdent"));
-        }
+            throw new ObjectNotFoundException(
+                    "Description not found for domain "+json.getJSONAttrStr("domainClassName") +" " + json.getJSONAttrLong("domainIdent"),
+                    ErrorCode.NOT_FOUND_DESCRIPTION.getValue(),
+                    Map.of("domainClass", json.getJSONAttrStr("domainClassName"), "id", json.getJSONAttrLong("domainIdent")));        }
     }
 
 

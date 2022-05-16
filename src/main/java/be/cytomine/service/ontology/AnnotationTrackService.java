@@ -28,10 +28,7 @@ import be.cytomine.domain.security.SecRole;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.SecUserSecRole;
 import be.cytomine.domain.security.User;
-import be.cytomine.exceptions.AlreadyExistException;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.ontology.AnnotationDomainRepository;
 import be.cytomine.repository.ontology.RelationRepository;
 import be.cytomine.repository.ontology.AnnotationTrackRepository;
@@ -123,7 +120,8 @@ public class AnnotationTrackService extends ModelService {
     @Override
     public CommandResponse add(JsonObject jsonObject) {
         AnnotationDomain annotation = annotationDomainRepository.findById(jsonObject.getJSONAttrLong("annotationIdent"))
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", jsonObject.getJSONAttrStr("annotationIdent")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", jsonObject.getJSONAttrStr("annotationIdent")));
+
         securityACLService.check(annotation.container(),READ);
         securityACLService.checkFullOrRestrictedForOwner(annotation, annotation.user());
         securityACLService.checkUser(currentUserService.getCurrentUser());
@@ -156,7 +154,7 @@ public class AnnotationTrackService extends ModelService {
     public CommandResponse delete(CytomineDomain domain, Transaction transaction, Task task, boolean printMessage) {
         AnnotationTrack annotationTrack = (AnnotationTrack)domain;
         AnnotationDomain annotation = annotationDomainRepository.findById(annotationTrack.getAnnotationIdent())
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", annotationTrack.getId()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", annotationTrack.getId()));
 
         securityACLService.check(annotation.container(), READ);
         securityACLService.checkFullOrRestrictedForOwner(annotation, annotation.user());
@@ -215,7 +213,10 @@ public class AnnotationTrackService extends ModelService {
         }
 
         if (domain == null) {
-            throw new ObjectNotFoundException(currentDomain() + " " + json + " not found");
+            throw new ObjectNotFoundException(
+                    currentDomain() + " " + json + " not found",
+                    ErrorCode.NOT_FOUND_DOMAIN.getValue(),
+                    Map.of("domain", currentDomain(), "json", json));
         }
         CytomineDomain container = domain.container();
         if (container!=null) {

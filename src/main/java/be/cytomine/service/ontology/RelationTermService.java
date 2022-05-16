@@ -26,6 +26,7 @@ import be.cytomine.domain.ontology.RelationTerm;
 import be.cytomine.domain.ontology.Term;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.AlreadyExistException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.ontology.RelationTermRepository;
 import be.cytomine.service.CurrentUserService;
@@ -40,10 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.security.acls.domain.BasePermission.*;
 
@@ -166,6 +164,10 @@ public class RelationTermService extends ModelService {
     @Override
     public CytomineDomain retrieve(JsonObject json) {
         return relationTermRepository.findByRelationAndTerm1AndTerm2(json.getJSONAttrLong("relation"),json.getJSONAttrLong("term1"),json.getJSONAttrLong("term2"))
-                .orElseThrow(() -> new ObjectNotFoundException("Relation-term not found " + json));
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        "Relation-term not found " + json,
+                        ErrorCode.NOT_FOUND.getValue(),
+                        Map.of("object", "Relation-term")
+                ));
     }
 }

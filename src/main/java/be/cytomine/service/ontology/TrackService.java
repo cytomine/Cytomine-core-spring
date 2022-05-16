@@ -24,6 +24,7 @@ import be.cytomine.domain.ontology.Track;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.AlreadyExistException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.ontology.TrackRepository;
 import be.cytomine.service.CurrentUserService;
@@ -108,7 +109,7 @@ public class TrackService extends ModelService {
     @Override
     public CommandResponse add(JsonObject jsonObject) {
         ImageInstance imageInstance = imageInstanceService.find(jsonObject.getJSONAttrLong("image",0L))
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", jsonObject.getJSONAttrStr("image")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",jsonObject.getJSONAttrLong("image",0L)));
         jsonObject.put("project", imageInstance.getProject().getId());
 
         securityACLService.check(imageInstance.getProject(), READ);
@@ -134,7 +135,7 @@ public class TrackService extends ModelService {
         securityACLService.checkUser(currentUser);
 
         ImageInstance imageInstance = imageInstanceService.find(jsonNewData.getJSONAttrLong("image", 0L))
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", jsonNewData.getJSONAttrStr("image")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",jsonNewData.getJSONAttrLong("image",0L)));
         jsonNewData.put("project", imageInstance.getProject().getId());
 
         return executeCommand(new EditCommand(currentUser, transaction), domain,jsonNewData);

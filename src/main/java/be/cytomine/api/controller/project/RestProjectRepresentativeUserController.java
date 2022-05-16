@@ -59,7 +59,7 @@ public class RestProjectRepresentativeUserController extends RestCytomineControl
     ) {
         log.debug("REST request to list projectRepresentativeUsers for project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
         return responseSuccess(projectRepresentativeUserService.listByProject(project));
     }
 
@@ -70,7 +70,7 @@ public class RestProjectRepresentativeUserController extends RestCytomineControl
     ) {
         log.debug("REST request to get ProjectRepresentativeUser : {}", id);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return projectRepresentativeUserService.find(id)
                 .map(this::responseSuccess)
                 .orElseGet(() -> responseNotFound("ProjectRepresentativeUser", id));
@@ -96,14 +96,14 @@ public class RestProjectRepresentativeUserController extends RestCytomineControl
         ProjectRepresentativeUser projectRepresentativeUser;
         if(id!=null) {
             projectRepresentativeUser = projectRepresentativeUserService.find(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("ProjectRepresentativeUser", id));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("ProjectRepresentativeUser", id));
         } else {
             Project project = projectService.find(projectId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
             User user = secUserService.findUser(userId)
-                    .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
             projectRepresentativeUser = projectRepresentativeUserService.find(project, user)
-                    .orElseThrow(() -> new ObjectNotFoundException("ProjectRepresentativeUser", JsonObject.of("project", projectId, "user", userId).toJsonString()));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("ProjectRepresentativeUser", JsonObject.of("project", projectId, "user", userId).toJsonString()));
         }
         Task existingTask = taskService.get(task);
         return delete(projectRepresentativeUserService, JsonObject.of("id", projectRepresentativeUser.getId()), existingTask);

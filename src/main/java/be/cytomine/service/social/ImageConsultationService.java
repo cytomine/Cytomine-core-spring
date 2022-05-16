@@ -25,6 +25,7 @@ import be.cytomine.domain.social.PersistentImageConsultation;
 import be.cytomine.domain.social.PersistentProjectConnection;
 import be.cytomine.domain.social.PersistentUserPosition;
 import be.cytomine.exceptions.CytomineException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.AnnotationListing;
 import be.cytomine.repository.UserAnnotationListing;
@@ -126,7 +127,7 @@ public class ImageConsultationService {
     public PersistentImageConsultation add(SecUser user, Long imageId, String session, String mode, Date created) {
         System.out.println(currentUserService.getCurrentUser());
         ImageInstance imageInstance = imageInstanceRepository.findById(imageId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",imageId));
 
         closeLastImageConsultation(user.getId(), imageId, created);
 
@@ -447,7 +448,9 @@ public class ImageConsultationService {
     }
 
     public List<JsonObject> resumeByUserAndProject(Long userId, Long projectId) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
+
         securityACLService.check(project, READ);
 //        // groupByImageId et get last imagename et imagethumb et
 //        def db = mongo.getDB(noSQLCollectionService.getDatabaseName())
@@ -549,7 +552,8 @@ public class ImageConsultationService {
         for (Document result : results) {
             try {
                 ImageInstance imageInstance = imageInstanceService.find(result.getLong("_id"))
-                        .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", result.get("_id")));
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance", result.get("_id").toString()));
+
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.put("id", result.get("_id"));
                 jsonObject.put("date", result.get("date"));

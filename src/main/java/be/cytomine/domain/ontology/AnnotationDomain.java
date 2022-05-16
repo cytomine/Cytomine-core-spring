@@ -23,6 +23,7 @@ import be.cytomine.domain.image.SliceInstance;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.dto.Point;
 import be.cytomine.utils.GisUtils;
@@ -37,6 +38,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Entity
@@ -259,7 +261,7 @@ public abstract class AnnotationDomain extends CytomineDomain implements Seriali
             return annotation;
         }
         else {
-            throw new ObjectNotFoundException("Annotation "+id+" not found");
+            throw ObjectNotFoundException.notFoundException("Annotation", id);
         }
     }
 

@@ -18,6 +18,7 @@ package be.cytomine.api.controller.project;
 
 import be.cytomine.api.controller.RestCytomineController;
 import be.cytomine.domain.project.Project;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.project.ProjectDefaultLayerRepository;
 import be.cytomine.repository.project.ProjectRepository;
@@ -30,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -54,7 +57,7 @@ public class RestProjectDefaultLayerController extends RestCytomineController {
     ) {
         log.debug("REST request to list projectDefaultLayers for project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", id));
         return responseSuccess(projectDefaultLayerService.listByProject(project));
     }
 
@@ -65,7 +68,7 @@ public class RestProjectDefaultLayerController extends RestCytomineController {
     ) {
         log.debug("REST request to get ProjectDefaultLayer : {}", id);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return projectDefaultLayerService.find(id)
                 .map(this::responseSuccess)
                 .orElseGet(() -> responseNotFound("ProjectDefaultLayer", id));

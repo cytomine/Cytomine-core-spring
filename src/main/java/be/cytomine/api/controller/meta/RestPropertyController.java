@@ -22,6 +22,7 @@ import be.cytomine.domain.image.ImageInstance;
 import be.cytomine.domain.ontology.AnnotationDomain;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.exceptions.WrongArgumentException;
 import be.cytomine.repository.ontology.AnnotationDomainRepository;
@@ -68,7 +69,7 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to list property for project {}", projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(propertyService.list(project));
     }
 
@@ -79,7 +80,7 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to list property for annotation {}", annotationId);
         AnnotationDomain annotation = annotationDomainRepository.findById(annotationId)
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(propertyService.list(annotation));
     }
 
@@ -89,7 +90,7 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to list property for imageInstance {}", imageInstanceId);
         ImageInstance imageInstance = imageInstanceService.find(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
         return responseSuccess(propertyService.list(imageInstance));
     }
 
@@ -101,7 +102,7 @@ public class RestPropertyController extends RestCytomineController {
         log.debug("REST request to list property for {}} {}", domainClassName, domainIdent);
         CytomineDomain cytomineDomain = projectService.getCytomineDomain(domainClassName, domainIdent);
         if (cytomineDomain == null) {
-            throw new ObjectNotFoundException(domainClassName, domainIdent);
+            throw ObjectNotFoundException.notFoundException(domainClassName, domainIdent);
         }
         return responseSuccess(propertyService.list(cytomineDomain));
     }
@@ -115,13 +116,13 @@ public class RestPropertyController extends RestCytomineController {
         log.debug("REST request to list keys for project {} image {} and withUser {}", projectId, imageInstanceId, withUser);
         if (projectId != null) {
             Project project = projectService.find(projectId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
             List<Map<String, Object>> maps = propertyService.listKeysForAnnotation(project, null, withUser);
             return responseSuccess(withUser ? maps : maps.stream().map(x -> x.get("key")).toList());
         }
         if (imageInstanceId != null) {
             ImageInstance imageInstance = imageInstanceService.find(imageInstanceId)
-                    .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
             List<Map<String, Object>> maps = propertyService.listKeysForAnnotation(null, imageInstance, withUser);
             return responseSuccess(withUser ? maps : maps.stream().map(x -> x.get("key")).toList());
         }
@@ -134,7 +135,7 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to list keys for image in project {}", projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(propertyService.listKeysForImageInstance(project));
     }
 
@@ -147,9 +148,9 @@ public class RestPropertyController extends RestCytomineController {
     ) throws ParseException {
         log.debug("REST request to list annotation position");
         ImageInstance imageInstance = imageInstanceService.find(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
         SecUser secUser = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser" , userId));
         Geometry boundingbox = null;
         if (bbox!=null) {
             boundingbox = GeometryUtils.createBoundingBox(bbox);
@@ -165,9 +166,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for project {}", key, projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(propertyService.findByDomainAndKey(project, key)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", projectId + "/" + key)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , projectId + "/" + key)));
     }
     
     @GetMapping("/project/{project}/property/{id}.json")
@@ -177,9 +178,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for project {}", id, projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(propertyService.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", projectId + "/" + id)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , projectId + "/" + id)));
     }
 
     @GetMapping("/imageinstance/{imageinstance}/key/{key}/property.json")
@@ -189,9 +190,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for imageInstance {}", key, imageInstanceId);
         ImageInstance imageInstance = imageInstanceService.find(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
         return responseSuccess(propertyService.findByDomainAndKey(imageInstance, key)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", imageInstanceId + "/" + key)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , imageInstanceId + "/" + key)));
     }
 
     @GetMapping("/imageinstance/{imageinstance}/property/{id}.json")
@@ -201,9 +202,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for imageInstance {}", id, imageInstanceId);
         ImageInstance imageInstance = imageInstanceService.find(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
         return responseSuccess(propertyService.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", imageInstanceId + "/" + id)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , imageInstanceId + "/" + id)));
     }
 
     @GetMapping("/annotation/{annotation}/key/{key}/property.json")
@@ -213,9 +214,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for annotation {}", key, annotationId);
         AnnotationDomain annotation = annotationDomainRepository.findById(annotationId)
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(propertyService.findByDomainAndKey(annotation, key)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", annotationId + "/" + key)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , annotationId + "/" + key)));
     }
 
     @GetMapping("/annotation/{annotation}/property/{id}.json")
@@ -225,9 +226,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for annotation {}", id, annotationId);
         AnnotationDomain annotation = annotationDomainRepository.findById(annotationId)
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(propertyService.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", annotationId + "/" + id)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , annotationId + "/" + id)));
     }
 
     @GetMapping("/domain/{domainClassName}/{domainIdent}/key/{key}/property.json")
@@ -238,9 +239,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for domain {} {}", key, domainClassName, domainIdent);
         CytomineDomain domain = Optional.ofNullable(projectService.getCytomineDomain(domainClassName, domainIdent))
-                .orElseThrow(() -> new ObjectNotFoundException("Domain", domainClassName + "/" + domainIdent));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Domain", domainClassName + "/" + domainIdent));
         return responseSuccess(propertyService.findByDomainAndKey(domain, key)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", domain + "/" + key)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , domain + "/" + key)));
     }
 
     @GetMapping("/domain/{domainClassName}/{domainIdent}/property/{id}.json")
@@ -251,9 +252,9 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to show property {} for domain {} {}", id, domainClassName, domainIdent);
         CytomineDomain domain = Optional.ofNullable(projectService.getCytomineDomain(domainClassName, domainIdent))
-                .orElseThrow(() -> new ObjectNotFoundException("Domain", domainClassName + "/" + domainIdent));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Domain", domainClassName + "/" + domainIdent));
         return responseSuccess(propertyService.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property", domain + "/" + id)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Property" , domain + "/" + id)));
     }
 
 //
@@ -264,7 +265,7 @@ public class RestPropertyController extends RestCytomineController {
 //    ) {
 //        log.debug("REST request to add property for project {} {}", projectId, jsonObject.toJsonString());
 //        Project project = projectService.find(projectId)
-//                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+//                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 //        return responseSuccess(propertyService.add(jsonObject));
 //    }
 //
@@ -276,7 +277,7 @@ public class RestPropertyController extends RestCytomineController {
 //    ) {
 //        log.debug("REST request to delete property for project {} / {}", projectId, id);
 //        Project project = projectService.find(projectId)
-//                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+//                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 //        return update(propertyService, jsonObject);
 //    }
 //
@@ -287,7 +288,7 @@ public class RestPropertyController extends RestCytomineController {
 //    ) {
 //        log.debug("REST request to delete property for project {} / {}", projectId, id);
 //        Project project = projectService.find(projectId)
-//                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+//                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 //        return delete(propertyService, JsonObject.of("id", id), null);
 //    }
 
@@ -299,7 +300,7 @@ public class RestPropertyController extends RestCytomineController {
     ) {
         log.debug("REST request to add property for domain {} {}", domainClassName, domainIdent);
         CytomineDomain domain = Optional.ofNullable(projectService.getCytomineDomain(domainClassName, domainIdent))
-                .orElseThrow(() -> new ObjectNotFoundException("Domain", domainClassName + "/" + domainIdent));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Domain", domainClassName + "/" + domainIdent));
         jsonObject.putIfAbsent("domainClassName", domainClassName);
         jsonObject.putIfAbsent("domainIdent", domainIdent);
         return responseSuccess(propertyService.add(jsonObject));

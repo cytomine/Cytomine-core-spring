@@ -27,6 +27,7 @@ import be.cytomine.domain.processing.ImagingServer;
 import be.cytomine.domain.processing.ParameterConstraint;
 import be.cytomine.domain.processing.SoftwareUserRepository;
 import be.cytomine.domain.security.*;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.image.MimeRepository;
 import be.cytomine.repository.meta.ConfigurationRepository;
@@ -276,7 +277,7 @@ public class BootstrapUtilsService {
 
     public ImagingServer createImagingServer() {
         String imageServerURL = applicationConfiguration.getImageServerURL().stream().findFirst()
-                .orElseThrow(() -> new ObjectNotFoundException("No image server defined in configuration"));
+                .orElseThrow(() -> new ObjectNotFoundException("No image server defined in configuration", ErrorCode.NOT_FOUND_IMAGE_SERVER.getValue()));
         if (imagingServerRepository.findByUrl(imageServerURL).isEmpty()) {
             ImagingServer imagingServer = new ImagingServer();
             imagingServer.setUrl(imageServerURL);

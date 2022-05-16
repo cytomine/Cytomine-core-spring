@@ -67,7 +67,7 @@ public class CommandController extends RestCytomineController {
         Command command = null;
         if (id!=null) {
             command = commandRepository.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Command" , id));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Command" , id));
         }
 
 
@@ -109,7 +109,7 @@ public class CommandController extends RestCytomineController {
         Command command = null;
         if (id!=null) {
             command = commandRepository.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Command" , id));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Command" , id));
         }
 
 

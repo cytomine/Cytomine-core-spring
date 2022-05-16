@@ -23,6 +23,7 @@ import be.cytomine.domain.ontology.Term;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.image.server.StorageRepository;
 import be.cytomine.repository.ontology.OntologyRepository;
@@ -169,7 +170,7 @@ class ApplicationBootstrap {
 
             // same as superadmin, but a userjob
             bootstrapUtilDataService.createUserJob("superadminjob", dataset.ADMINPASSWORD,
-                    (User)secUserRepository.findByUsernameLikeIgnoreCase("superadmin").orElseThrow(() -> new ObjectNotFoundException("User", "superadmin")),
+                    (User)secUserRepository.findByUsernameLikeIgnoreCase("superadmin").orElseThrow(() -> ObjectNotFoundException.notFoundException("User", "superadmin")),
                     List.of("ROLE_USER", "ROLE_ADMIN","ROLE_SUPER_ADMIN"));
 
             // We need these users for all authorization tests
@@ -192,7 +193,7 @@ class ApplicationBootstrap {
 
         if (applicationConfiguration.getImageServerPrivateKey()!=null && applicationConfiguration.getImageServerPublicKey()!=null) {
             SecUser imageServerUser = secUserRepository.findByUsernameLikeIgnoreCase("ImageServer1")
-                    .orElseThrow(() -> new ObjectNotFoundException("No user imageserver1, cannot assign keys"));
+                    .orElseThrow(() -> new ObjectNotFoundException("No user imageserver1, cannot assign keys", ErrorCode.NOT_FOUND_USER.getValue(), Map.of("user", "imageserver1")));
             imageServerUser.setPrivateKey(applicationConfiguration.getImageServerPrivateKey());
             imageServerUser.setPublicKey(applicationConfiguration.getImageServerPublicKey());
             secUserRepository.save(imageServerUser);

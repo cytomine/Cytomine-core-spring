@@ -106,7 +106,7 @@ public class RestTermController extends RestCytomineController {
         log.debug("REST request to list terms for ontology {}", id);
         return ontologyRepository.findById(id)
                 .map( ontology -> responseSuccess(termService.list(ontology)))
-                .orElseThrow(() -> new ObjectNotFoundException("Ontology", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Ontology", id));
     }
 
     @GetMapping("/project/{id}/term.json")
@@ -116,6 +116,6 @@ public class RestTermController extends RestCytomineController {
         log.debug("REST request to list terms for project {}", id);
         return projectRepository.findById(id)
                 .map( ontology -> responseSuccess(termService.list(ontology)))
-                .orElseThrow(() -> new ObjectNotFoundException("Ontology", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Ontology", id));
     }
 }

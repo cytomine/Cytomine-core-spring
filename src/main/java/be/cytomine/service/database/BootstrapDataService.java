@@ -20,6 +20,7 @@ import be.cytomine.config.ApplicationConfiguration;
 import be.cytomine.domain.meta.ConfigurationReadingRole;
 import be.cytomine.domain.processing.ImagingServer;
 import be.cytomine.domain.security.SecUser;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.security.SecUserRepository;
 import be.cytomine.service.amqp.AmqpQueueConfigService;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 import static be.cytomine.domain.ontology.RelationTerm.PARENT;
 
@@ -141,7 +143,7 @@ public class BootstrapDataService {
 
     private void changeUserKeys(String username, String privateKey, String publicKey) {
         SecUser user = secUserRepository.findByUsernameLikeIgnoreCase(username)
-                .orElseThrow(() -> new ObjectNotFoundException(username + " user does not exists, cannot set its keys"));
+                .orElseThrow(() -> new ObjectNotFoundException(username + " user does not exists, cannot set its keys", ErrorCode.NOT_FOUND_USER.getValue(), Map.of("user", username)));
         user.setPrivateKey(privateKey);
         user.setPublicKey(publicKey);
         secUserRepository.save(user);

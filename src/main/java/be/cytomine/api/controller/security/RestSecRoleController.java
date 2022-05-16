@@ -60,6 +60,6 @@ public class RestSecRoleController extends RestCytomineController {
     @GetMapping("/role/{id}.json")
     public ResponseEntity<String> get(@PathVariable Long id) {
         log.debug("REST request to list roles");
-        return responseSuccess(secRoleService.find(id).orElseThrow(() -> new ObjectNotFoundException("SecRole", id)));
+        return responseSuccess(secRoleService.find(id).orElseThrow(() -> ObjectNotFoundException.notFoundException("SecRole", id)));
     }
 }

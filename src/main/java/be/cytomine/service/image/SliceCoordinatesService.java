@@ -22,6 +22,7 @@ import be.cytomine.domain.image.ImageInstance;
 import be.cytomine.domain.image.SliceInstance;
 import be.cytomine.dto.SliceCoordinate;
 import be.cytomine.dto.SliceCoordinates;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.exceptions.WrongArgumentException;
 import be.cytomine.repository.image.AbstractSliceRepository;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,8 +69,9 @@ public class SliceCoordinatesService {
 
     public AbstractSlice getReferenceSlice(AbstractImage abstractImage) {
         SliceCoordinate sliceCoordinate = getReferenceSliceCoordinate(abstractImage);
+
         return abstractSliceRepository.findByImageAndChannelAndZStackAndTime(abstractImage, sliceCoordinate.getChannel(), sliceCoordinate.getZStack(), sliceCoordinate.getTime())
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", "image:" + abstractImage.getId() + "," + sliceCoordinate.getChannel()+ ":" + sliceCoordinate.getZStack() + ":" + sliceCoordinate.getTime()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice", "image:" + abstractImage.getId() + "," + sliceCoordinate.getChannel()+ ":" + sliceCoordinate.getZStack() + ":" + sliceCoordinate.getTime()));
     }
 
     public SliceInstance getReferenceSlice(ImageInstance imageInstance) {
@@ -92,8 +95,8 @@ public class SliceCoordinatesService {
                 sliceCoordinates.getTimes().get((int) Math.floor(sliceCoordinates.getTimes().size()/2))
         );
         SliceInstance result = slicesInstances.stream().filter(x -> x.getImage().getId().equals(imageInstance.getId()) && x.getBaseSlice().getChannel().equals(referenceSliceCoordinates.getChannel()) && x.getBaseSlice().getZStack().equals(referenceSliceCoordinates.getZStack()) && x.getBaseSlice().getTime().equals(referenceSliceCoordinates.getTime()))
-                .findFirst().orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", "image:" + imageInstance.getBaseImage().getId() + "," + referenceSliceCoordinates.getChannel()+ ":" + referenceSliceCoordinates.getZStack() + ":" + referenceSliceCoordinates.getTime()));
+                .findFirst()
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice", "image:" + imageInstance.getBaseImage().getId() + "," + referenceSliceCoordinates.getChannel()+ ":" + referenceSliceCoordinates.getZStack() + ":" + referenceSliceCoordinates.getTime()));
         return result;
     }
-
 }

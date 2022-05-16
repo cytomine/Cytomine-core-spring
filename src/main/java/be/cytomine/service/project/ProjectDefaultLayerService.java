@@ -23,6 +23,7 @@ import be.cytomine.domain.project.ProjectDefaultLayer;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
 import be.cytomine.exceptions.AlreadyExistException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.project.ProjectRepository;
 import be.cytomine.repository.project.ProjectDefaultLayerRepository;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -100,9 +102,10 @@ public class ProjectDefaultLayerService extends ModelService {
         SecUser currentUser = currentUserService.getCurrentUser();
         securityACLService.check(jsonObject.getJSONAttrLong("project"),Project.class,WRITE);
         User user = secUserService.findUser(jsonObject.getJSONAttrLong("user"))
-                .orElseThrow(() -> new ObjectNotFoundException("User", jsonObject.getJSONAttrStr("user")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("user", jsonObject.getJSONAttrStr("user")));
+
         Project project = projectRepository.findById(jsonObject.getJSONAttrLong("project"))
-                .orElseThrow(() -> new ObjectNotFoundException("Project", jsonObject.getJSONAttrStr("project")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", jsonObject.getJSONAttrLong("project")));
 
         securityACLService.checkIsUserInProject(user, project);
 

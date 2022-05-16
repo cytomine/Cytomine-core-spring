@@ -22,10 +22,7 @@ import be.cytomine.domain.image.ImageInstance;
 import be.cytomine.domain.image.SliceInstance;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
-import be.cytomine.exceptions.ForbiddenException;
-import be.cytomine.exceptions.InvalidRequestException;
-import be.cytomine.exceptions.ObjectNotFoundException;
+import be.cytomine.exceptions.*;
 import be.cytomine.service.CurrentUserService;
 import be.cytomine.service.dto.CropParameter;
 import be.cytomine.service.dto.ImageParameter;
@@ -79,7 +76,7 @@ public class RestImageInstanceController extends RestCytomineController {
 
         return imageInstanceService.find(id)
                 .map(x -> responseSuccess(x, isFilterRequired(x.getProject())))
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
     }
 
     @GetMapping("/user/{id}/imageinstance.json")
@@ -88,7 +85,7 @@ public class RestImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to get image instance by user {}", id);
         SecUser secUser = secUserService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUser", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", id));
         RequestParams requestParams = retrievePageableParameters();
         return responseSuccess(imageInstanceService.list(secUser, retrieveSearchParameters(), requestParams.getSort(), requestParams.getOrder(), requestParams.getOffset(), requestParams.getMax()));
     }
@@ -101,7 +98,7 @@ public class RestImageInstanceController extends RestCytomineController {
         SecUser secUser = currentUserService.getCurrentUser();
         if (id != 0) {
             secUser = secUserService.find(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("SecUser", id));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", id));
         }
         return responseSuccess(imageInstanceService.listLight(secUser));
     }
@@ -120,7 +117,7 @@ public class RestImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to list images for project : {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", id));
         RequestParams requestParams = retrievePageableParameters();
         if (light) {
             return responseSuccess(imageInstanceService.listLight(project), isFilterRequired(project));
@@ -141,7 +138,8 @@ public class RestImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to get image instance {}", id);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
 
         return imageInstanceService.next(imageInstance)
                 .map(x -> responseSuccess(x, isFilterRequired(x.getProject())))
@@ -154,7 +152,8 @@ public class RestImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to get image instance {}", id);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
 
         return imageInstanceService.previous(imageInstance)
                 .map(x -> responseSuccess(x, isFilterRequired(x.getProject())))
@@ -206,7 +205,8 @@ public class RestImageInstanceController extends RestCytomineController {
         thumbParameter.setRefresh(refresh);
 
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         responseByteArray(imageServerService.thumb(sliceCoordinatesService.getReferenceSlice(imageInstance.getBaseImage()), thumbParameter), format
         );
     }
@@ -236,7 +236,8 @@ public class RestImageInstanceController extends RestCytomineController {
         previewParameter.setBits(bits!=null && !bits.equals("max") ? Integer.parseInt(bits): null);
 
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         responseByteArray(imageServerService.thumb(sliceCoordinatesService.getReferenceSlice(imageInstance.getBaseImage()), previewParameter), format
         );
     }
@@ -246,7 +247,8 @@ public class RestImageInstanceController extends RestCytomineController {
     public ResponseEntity<String> associated(@PathVariable Long id) throws IOException {
         log.debug("REST request to get available associated images");
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         return responseSuccess(imageServerService.associated(imageInstance));
     }
 
@@ -258,7 +260,7 @@ public class RestImageInstanceController extends RestCytomineController {
             @RequestParam(defaultValue = "256") Integer maxSize) {
         log.debug("REST request to get associated image of a abstract image");
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
         LabelParameter labelParameter = new LabelParameter();
         labelParameter.setFormat(format);
         labelParameter.setLabel(label);
@@ -298,7 +300,8 @@ public class RestImageInstanceController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -351,7 +354,8 @@ public class RestImageInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(withExterior);
         windowParameter.setFormat(format);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         String url = imageServerService.windowUrl(sliceCoordinatesService.getReferenceSlice(imageInstance.getBaseImage()), windowParameter);
         return responseSuccess(JsonObject.of("url", url));
     }
@@ -379,7 +383,8 @@ public class RestImageInstanceController extends RestCytomineController {
 //        if (params.mask || params.alphaMask || params.alphaMask || params.draw || params.type in ['draw', 'mask', 'alphaMask', 'alphamask'])
 //             params.location = getWKTGeometry(imageInstance, params)
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         responseByteArray(imageServerService.window(sliceCoordinatesService.getReferenceSlice(imageInstance.getBaseImage()), windowParameter), format);
     }
 
@@ -401,7 +406,8 @@ public class RestImageInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(false);
         windowParameter.setFormat(format);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         String url = imageServerService.windowUrl(sliceCoordinatesService.getReferenceSlice(imageInstance.getBaseImage()), windowParameter);
         return responseSuccess(JsonObject.of("url", url));
     }
@@ -424,7 +430,8 @@ public class RestImageInstanceController extends RestCytomineController {
         windowParameter.setWithExterior(false);
         windowParameter.setFormat(format);
         ImageInstance imageInstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
+
         responseByteArray(imageServerService.window(sliceCoordinatesService.getReferenceSlice(imageInstance.getBaseImage()), windowParameter), format);
     }
 
@@ -432,7 +439,7 @@ public class RestImageInstanceController extends RestCytomineController {
     public RedirectView download(@PathVariable Long id) throws IOException {
         log.debug("REST request to download image instance");
         ImageInstance imageinstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
 
         boolean canDownload = imageinstance.getProject().getAreImagesDownloadable();
         if(!canDownload) {
@@ -464,7 +471,7 @@ public class RestImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request get metadata for imageinstance {}", id);
         ImageInstance imageinstance = imageInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",id));
 
         //responseSuccess(propertyService.list(imageinstance.getBaseImage()));
         //TODO
@@ -479,7 +486,7 @@ public class RestImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request get bouds for imageinstance in project {}", projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         return responseSuccess(JsonObject.toJsonString(imageInstanceService.computeBounds(project)));
     }
 
@@ -500,7 +507,7 @@ public class RestImageInstanceController extends RestCytomineController {
 //
 //        if (requestParams.containsKey("project")) {
 //            Project project = projectService.find(Long.parseLong(requestParams.get("id")))
-//                    .orElseThrow(() -> new ObjectNotFoundException("Project",requestParams.get("id" )));
+//                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" ,requestParams.get("id" )));
 //            filterEnabled = project.getBlindMode();
 //        } else if(requestParams.containsKey("id")) { //TODO!!! WTF??? && !(["windowUrl", "cameraUrl", "getReferenceSlice"].contains(params.action.GET))
 ////            project = ImageInstance.read(params.long("id"))?.project

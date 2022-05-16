@@ -110,7 +110,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to count reviewed annotation by project");
         Project project= projectService.find(idProject)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", idProject));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , idProject));
         Date start = (startDate!=null? new Date(startDate) : null);
         Date end = (endDate!=null? new Date(endDate) : null);
         return responseSuccess(JsonObject.of("total", reviewedAnnotationService.countByProject(project, start, end)));
@@ -123,7 +123,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to list reviewed annotation stats by image");
         ImageInstance imageInstance = imageInstanceService.find(idImage)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", idImage));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , idImage));
         return responseSuccess(reviewedAnnotationService.statsGroupByUser(imageInstance));
     }
 
@@ -172,7 +172,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to start review of image {}", idImage);
         ImageInstance imageInstance = imageInstanceService.find(idImage)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", idImage));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , idImage));
 
         imageInstanceService.startReview(imageInstance);
 
@@ -193,7 +193,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to stop review of image {} with cancel {}",idImage , cancel);
         ImageInstance imageInstance = imageInstanceService.find(idImage)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", idImage));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , idImage));
 
         imageInstanceService.stopReview(imageInstance, cancel);
 
@@ -318,7 +318,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         ReviewedAnnotation reviewedannotation = reviewedAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ReviewedAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ReviewedAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -381,7 +381,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         ReviewedAnnotation reviewedannotation = reviewedAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ReviewedAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ReviewedAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -443,7 +443,7 @@ public class RestReviewedAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         ReviewedAnnotation reviewedannotation = reviewedAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("ReviewedAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ReviewedAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);

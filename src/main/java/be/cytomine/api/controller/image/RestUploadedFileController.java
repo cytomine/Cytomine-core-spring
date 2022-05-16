@@ -80,7 +80,7 @@ public class RestUploadedFileController extends RestCytomineController {
         log.debug("REST request to get uploadedFile {}", id);
         return uploadedFileService.find(id)
                 .map(this::responseSuccess)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractImage", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage" , id));
     }
 
     @PostMapping(value = "/uploadedfile.json")
@@ -120,7 +120,7 @@ public class RestUploadedFileController extends RestCytomineController {
     public RedirectView download(@PathVariable Long id) throws IOException {
         log.debug("REST request to download uploadedFile");
         UploadedFile uploadedFile = uploadedFileService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UploadedFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UploadedFile", id));
         // TODO: in abstract image, there is no check fos download auth!?
         String url = imageServerService.downloadUri(uploadedFile);
         return new RedirectView(url);

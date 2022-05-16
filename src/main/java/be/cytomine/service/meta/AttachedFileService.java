@@ -26,10 +26,7 @@ import be.cytomine.domain.ontology.RelationTerm;
 import be.cytomine.domain.ontology.Term;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
-import be.cytomine.exceptions.AlreadyExistException;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.meta.AttachedFileRepository;
 import be.cytomine.repository.ontology.AnnotationDomainRepository;
 import be.cytomine.repository.ontology.AnnotationTermRepository;
@@ -48,10 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.security.acls.domain.BasePermission.*;
 
@@ -89,7 +83,7 @@ public class AttachedFileService extends ModelService {
     public List<AttachedFile> findAllByDomain(String domainClassName, Long domainIdent) {
         if(domainClassName.contains("AnnotationDomain")) {
             AnnotationDomain annotation = annotationDomainRepository.findById(domainIdent)
-                    .orElseThrow(() -> new ObjectNotFoundException(domainClassName, domainIdent));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException(domainClassName, domainIdent));
             securityACLService.check(annotation, READ);
         } else {
             securityACLService.check(domainIdent,domainClassName, READ);
@@ -134,7 +128,7 @@ public class AttachedFileService extends ModelService {
 
         CytomineDomain recipientDomain = getCytomineDomain(attachedFile.getDomainClassName(), attachedFile.getDomainIdent());
         if (recipientDomain == null) {
-            throw new ObjectNotFoundException(attachedFile.getDomainClassName(), attachedFile.getDomainIdent());
+            throw ObjectNotFoundException.notFoundException(attachedFile.getDomainClassName(), attachedFile.getDomainIdent());
         }
 
         securityACLService.check(attachedFile.getDomainIdent(),attachedFile.getDomainClassName(),READ);

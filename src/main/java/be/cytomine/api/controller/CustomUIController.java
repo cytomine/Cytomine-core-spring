@@ -82,7 +82,7 @@ public class CustomUIController extends RestCytomineController {
     ) {
         log.debug("REST request to retrieve custom UI for project");
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         return responseSuccess(JsonObject.toJsonString(getProjectConfig(project)));
     }
@@ -95,7 +95,7 @@ public class CustomUIController extends RestCytomineController {
     ) {
         log.debug("REST request to save custom UI for project");
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         Optional<Property> optionalProperty = propertyService.findByDomainAndKey(project,CUSTOM_UI_PROJECT);
         securityACLService.check(project,ADMINISTRATION);

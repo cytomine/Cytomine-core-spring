@@ -56,7 +56,7 @@ public class RestSecUserSecRoleController extends RestCytomineController {
     {
         log.debug("REST request to list roles for user {}", userId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         return responseSuccess(highest ? List.of(secUserSecRoleService.getHighest(user)) : secUserSecRoleService.list(user));
     }
 
@@ -67,11 +67,11 @@ public class RestSecUserSecRoleController extends RestCytomineController {
     ) {
         log.debug("REST request to list roles for user {}", userId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         SecRole role = secRoleRepository.findById(roleId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecRole", roleId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecRole", roleId));
         return responseSuccess(secUserSecRoleService.find(user, role)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUserSecRole", JsonObject.of("user", user.getId(),"role", role.getId()).toJsonString())));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUserSecRole", JsonObject.of("user", user.getId(),"role", role.getId()).toJsonString())));
     }
 
     @PostMapping("/user/{user}/role.json")
@@ -90,11 +90,11 @@ public class RestSecUserSecRoleController extends RestCytomineController {
     ) {
         log.debug("REST request to list roles for user {} role {}", userId, roleId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         SecRole role = secRoleRepository.findById(roleId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecRole", roleId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecRole", roleId));
         SecUserSecRole secUserSecRole = secUserSecRoleService.find(user, role)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUserSecRole", JsonObject.of("user", user.getId(), "role", role.getId()).toJsonString()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUserSecRole", JsonObject.of("user", user.getId(), "role", role.getId()).toJsonString()));
         return delete(secUserSecRoleService, secUserSecRole.toJsonObject(), null);
     }
 
@@ -107,9 +107,9 @@ public class RestSecUserSecRoleController extends RestCytomineController {
     ) {
         log.debug("REST define role {} for user {}", roleId, userId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         SecRole role = secRoleRepository.findById(roleId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecRole", roleId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecRole", roleId));
         secUserSecRoleService.define(user, role);
         return responseSuccess(new ArrayList(currentRoleService.findCurrentRole(user)));
     }

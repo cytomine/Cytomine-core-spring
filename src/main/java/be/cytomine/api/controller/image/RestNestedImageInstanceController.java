@@ -49,7 +49,7 @@ public class RestNestedImageInstanceController extends RestCytomineController {
     ) {
         log.debug("REST request to list nested image for imageinstance {}", imageInstanceId);
         ImageInstance imageInstance = imageInstanceService.find(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
         return responseSuccess(nestedImageInstanceService.list(imageInstance));
     }
 
@@ -62,7 +62,7 @@ public class RestNestedImageInstanceController extends RestCytomineController {
         log.debug("REST request to get nested image instance {}", id);
         return nestedImageInstanceService.find(id)
                 .map(this::responseSuccess)
-                .orElseThrow(() -> new ObjectNotFoundException("NestedImageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("NestedImageInstance", id));
     }
 
     @PostMapping("/imageinstance/{imageInstanceId}/nested.json")

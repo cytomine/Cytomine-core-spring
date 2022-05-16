@@ -22,6 +22,7 @@ import be.cytomine.domain.ontology.Ontology;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.ontology.OntologyRepository;
 import be.cytomine.repository.project.ProjectRepository;
@@ -142,7 +143,7 @@ public class RestProjectController extends RestCytomineController {
     ) {
         log.debug("REST request to list last project actions");
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", id));
         List<CommandHistory> commandHistories = projectService.lastAction(project, max.intValue());
         return responseSuccess(commandHistories);
     }
@@ -167,7 +168,7 @@ public class RestProjectController extends RestCytomineController {
 //    ) {
 //        log.debug("REST request to list last project actions");
 //        Project project = projectRepository.findById(id)
-//                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+//                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
 //        return responseSuccess(projectService.listBySoftware(project));
 //    }
 
@@ -180,7 +181,7 @@ public class RestProjectController extends RestCytomineController {
     ) {
         log.debug("REST request to list project with ontology {}", id);
         Ontology ontology = ontologyRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Ontology", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Ontology", id));
         return responseSuccess(projectService.listByOntology(ontology));
     }
 
@@ -196,7 +197,7 @@ public class RestProjectController extends RestCytomineController {
     ) {
         log.debug("REST request to list project with user {}", id);
         User user = secUserService.findUser(id)
-                .orElseThrow(() -> new ObjectNotFoundException("User", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", id));
         Page<JsonObject> result = projectService.list(user, new ProjectSearchExtension(), new ArrayList<>(), "created", "desc", max, offset);
         return responseSuccess(result);
     }
@@ -214,7 +215,7 @@ public class RestProjectController extends RestCytomineController {
     ) {
         log.debug("REST request to list project with user {}", id);
         User requestedUser = secUserService.findUser(id)
-                .orElseThrow(() -> new ObjectNotFoundException("User", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", id));
 
         if(creator) {
             return responseSuccess(projectService.listByCreator(requestedUser));
@@ -251,7 +252,7 @@ public class RestProjectController extends RestCytomineController {
 
         if(id!=null) {
             projects.add(projectRepository.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Project", id)));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", id)));
         } else {
             projects.addAll(projectService.listForCurrentUser());
         }
@@ -274,7 +275,7 @@ public class RestProjectController extends RestCytomineController {
             @RequestBody JsonObject json
     ) throws MessagingException {
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", id));
         User user = projectService.inviteUser(project, json.getJSONAttrStr("name"),
                 json.getJSONAttrStr("firstname", "firstname"),
                 json.getJSONAttrStr("lastname", "lastname"),

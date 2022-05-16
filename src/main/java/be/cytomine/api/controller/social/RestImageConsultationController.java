@@ -22,6 +22,7 @@ import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
 import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.CurrentUserService;
 import be.cytomine.service.ontology.TermService;
@@ -77,7 +78,7 @@ public class RestImageConsultationController extends RestCytomineController {
             @PathVariable("project") Long projectId
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         return responseSuccess(imageConsultationService.lastImageOfUsersByProject(project, null, "created", "desc", 0L, 0L));
     }
 
@@ -99,8 +100,9 @@ public class RestImageConsultationController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
-        SecUser user = secUserService.find(userId).orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
+        SecUser user = secUserService.find(userId)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", userId));
 
         if (distinctImages) {
             return responseSuccess(imageConsultationService.listImageConsultationByProjectAndUserWithDistinctImage(project, user));
@@ -116,7 +118,7 @@ public class RestImageConsultationController extends RestCytomineController {
             @RequestParam(required = false) Long endDate
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
 
         return responseSuccess(JsonObject.of("total", imageConsultationService.countByProject(project, startDate, endDate)));
     }
@@ -131,9 +133,9 @@ public class RestImageConsultationController extends RestCytomineController {
         if (export!=null && export.equals("csv")) {
 
             Project project = projectService.find(projectId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
             User user = secUserService.findUser(userId)
-                    .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
 
             byte[] report = reportService.generateImageConsultationReport(project.getName(), user.getUsername(), results);
             responseReportFile(reportService.getImageConsultationReportFileName(export, projectId, userId), report, export);

@@ -24,6 +24,7 @@ import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.SecUserSecRole;
 import be.cytomine.domain.security.User;
 import be.cytomine.exceptions.AlreadyExistException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ForbiddenException;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.security.SecRoleRepository;
@@ -120,9 +121,11 @@ public class SecUserSecRoleService extends ModelService {
     public CommandResponse add(JsonObject jsonObject) {
         SecUser currentUser = currentUserService.getCurrentUser();
         SecRole role = secRoleRepository.findById(jsonObject.getJSONAttrLong("role"))
-                .orElseThrow(() -> new ObjectNotFoundException("Role", jsonObject.getJSONAttrStr("role")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Role", jsonObject.getJSONAttrStr("role")));
+
         SecUser user = secUserRepository.findById(jsonObject.getJSONAttrLong("user"))
-                .orElseThrow(() -> new ObjectNotFoundException("User", jsonObject.getJSONAttrStr("user")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", jsonObject.getJSONAttrStr("user")));
+
         Set<String> userRoles = secUserSecRoleRepository.findAllBySecUser(user).stream().map(x -> x.getSecRole().getAuthority())
                 .collect(Collectors.toSet());
 
@@ -236,7 +239,7 @@ public class SecUserSecRoleService extends ModelService {
        SecUser secUser = secUserRepository.getById(json.getJSONAttrLong("user"));
        SecRole secRole = secRoleRepository.getById(json.getJSONAttrLong("role"));
        return secUserSecRoleRepository.findBySecUserAndSecRole(secUser,secRole)
-               .orElseThrow(() -> new ObjectNotFoundException("SecUserSecRole", json.toJsonString()));
+               .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUserSecRole", json.toJsonString()));
     }
 
 

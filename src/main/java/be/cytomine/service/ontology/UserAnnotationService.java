@@ -27,10 +27,7 @@ import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
 import be.cytomine.dto.AnnotationLight;
 import be.cytomine.dto.SimplifiedAnnotation;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
-import be.cytomine.exceptions.ForbiddenException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.UserAnnotationListing;
 import be.cytomine.repository.image.ImageInstanceRepository;
 import be.cytomine.repository.image.SliceInstanceRepository;
@@ -310,11 +307,17 @@ public class UserAnnotationService extends ModelService {
         // We could provide "sliceObject", "imageObject", "userObject" in JSON and first check for them in the userannotation class
         if (!jsonObject.isMissing("slice")) {
             slice = sliceInstanceService.find(jsonObject.getJSONAttrLong("slice"))
-                    .orElseThrow(() -> new ObjectNotFoundException("SliceInstance with id " + jsonObject.get("slice")));
+                    .orElseThrow(() -> new ObjectNotFoundException(
+                            "SliceInstance with id " + jsonObject.get("slice"),
+                            ErrorCode.NOT_FOUND_INSTANCE.getValue(),
+                            Map.of("instance", "SliceInstance", "id", jsonObject.get("slice"))));
             image = slice.getImage();
         } else if (!jsonObject.isMissing("image")) {
             image = imageInstanceRepository.findById(jsonObject.getJSONAttrLong("image"))
-                    .orElseThrow(() -> new ObjectNotFoundException("ImageInstance with id " + jsonObject.get("image")));
+                    .orElseThrow(() -> new ObjectNotFoundException(
+                            "ImageInstance with id " + jsonObject.get("image"),
+                            ErrorCode.NOT_FOUND_INSTANCE.getValue(),
+                            Map.of("instance", "ImageInstance", "id", jsonObject.get("image"))));
             slice = sliceCoordinatesService.getReferenceSlice(image);
 
         } else {
@@ -565,7 +568,7 @@ public class UserAnnotationService extends ModelService {
 
     public List<CommandResponse> repeat(UserAnnotation userAnnotation, Long baseSliceId, int repeat) {
         SliceInstance currentSlice = sliceInstanceService.find(baseSliceId)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance with id " + baseSliceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance", baseSliceId));
 
         List<SliceInstance> slices = sliceInstanceRepository.listByImageInstanceOrderedByTZC(
                 userAnnotation.getImage(),

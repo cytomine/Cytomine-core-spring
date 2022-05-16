@@ -105,7 +105,7 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to count algo annotation by project");
         Project project= projectService.find(idProject)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", idProject));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , idProject));
         Date start = (startDate!=null? new Date(startDate) : null);
         Date end = (endDate!=null? new Date(endDate) : null);
         return responseSuccess(JsonObject.of("total", algoAnnotationService.countByProject(project, start, end)));
@@ -237,7 +237,7 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         AlgoAnnotation algoAnnotation = algoAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AlgoAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AlgoAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -300,7 +300,7 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         AlgoAnnotation algoAnnotation = algoAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AlgoAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AlgoAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -362,7 +362,7 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         AlgoAnnotation algoAnnotation = algoAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AlgoAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AlgoAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -404,7 +404,7 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to create comment for annotation : " + json);
         AlgoAnnotation annotation = algoAnnotationService.find(annotationId)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         json.put("annotationIdent", annotation.getId());
         json.put("annotationClassName", annotation.getClass().getName());
         return responseSuccess(sharedAnnotationService.add(json));
@@ -421,9 +421,9 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to read comment {} for annotation {}", commentId, annotationId);
         AlgoAnnotation annotation = algoAnnotationService.find(annotationId)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(sharedAnnotationService.find(commentId).orElseThrow(() ->
-                new ObjectNotFoundException("SharedAnnotation", commentId)));
+                ObjectNotFoundException.notFoundException("SharedAnnotation", commentId)));
     }
 
     /**
@@ -435,7 +435,7 @@ public class RestAlgoAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to read comments for annotation {}", annotationId);
         AlgoAnnotation annotation = algoAnnotationService.find(annotationId)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(sharedAnnotationService.listComments(annotation));
     }
 

@@ -20,6 +20,7 @@ import be.cytomine.api.controller.RestCytomineController;
 import be.cytomine.domain.CytomineDomain;
 import be.cytomine.domain.meta.AttachedFile;
 import be.cytomine.domain.meta.Configuration;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.command.TransactionService;
 import be.cytomine.service.meta.AttachedFileService;
@@ -60,7 +61,11 @@ public class RestDescriptionController extends RestCytomineController {
         log.debug("REST request to read description for domain {} {}", domainClassName, domainIdent);
 
         return responseSuccess(descriptionService.findByDomain(domainClassName.replaceAll("_", "."), domainIdent)
-                .orElseThrow(() -> new ObjectNotFoundException("Description", JsonObject.of("domainIdent", domainIdent, "domainClassName", domainClassName.replaceAll("_", ".")).toJsonString())));
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        "Description",
+                        JsonObject.of("domainIdent", domainIdent, "domainClassName", domainClassName.replaceAll("_", ".")).toJsonString(),
+                        ErrorCode.NOT_FOUND_DESCRIPTION.getValue(),
+                        Map.of("domainClass", domainClassName, "id", domainIdent))));
     }
 
     @PostMapping({"/description.json", "/domain/{domainClassName}/{domainIdent}/description.json"})

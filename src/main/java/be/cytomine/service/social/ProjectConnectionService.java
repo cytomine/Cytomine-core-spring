@@ -23,6 +23,7 @@ import be.cytomine.domain.social.PersistentConnection;
 import be.cytomine.domain.social.PersistentImageConsultation;
 import be.cytomine.domain.social.PersistentProjectConnection;
 import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.AnnotationListing;
 import be.cytomine.repository.UserAnnotationListing;
@@ -152,7 +153,8 @@ public class ProjectConnectionService {
 //    }
 
     public Optional<PersistentProjectConnection> lastConnectionInProject(Project project, Long userId, String sortProperty, String sortDirection){
-        SecUser secUser = secUserRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User", userId));
+        SecUser secUser = secUserRepository.findById(userId).orElseThrow(
+                () -> ObjectNotFoundException.notFoundException("User", userId));
         securityACLService.checkIsSameUserOrAdminContainer(project, secUser, currentUserService.getCurrentUser());
 
         return persistentProjectConnectionRepository.findAllByUserAndProject(
@@ -717,7 +719,8 @@ public class ProjectConnectionService {
 
     public List<PersistentImageConsultation> getUserActivityDetails(Long activityId){
         PersistentProjectConnection connection = persistentProjectConnectionRepository.findById(activityId)
-                .orElseThrow(() -> new ObjectNotFoundException("PersistentProjectConnection", activityId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("PersistentProjectConnection", activityId));
+
         Project project = projectRepository.getById(connection.getProject());
         securityACLService.check(project,WRITE);
 

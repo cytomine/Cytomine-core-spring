@@ -23,6 +23,7 @@ import be.cytomine.domain.image.server.Storage;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
 import be.cytomine.domain.security.UserJob;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.image.AbstractImageRepository;
 import be.cytomine.repository.image.AbstractSliceRepository;
@@ -221,7 +222,7 @@ public class UploadedFileService extends ModelService {
 
     public List<Map<String, Object>> listHierarchicalTree(User user, Long rootId) {
         UploadedFile root = this.find(rootId)
-                .orElseThrow(() -> new ObjectNotFoundException("UploadedFile", rootId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UploadedFile", rootId));
 
         String request = "SELECT uf.id, uf.created, uf.original_filename, uf.content_type, " +
                 "uf.l_tree, uf.parent_id as parent, " +

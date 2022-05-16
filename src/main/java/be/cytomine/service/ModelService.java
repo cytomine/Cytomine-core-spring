@@ -280,7 +280,10 @@ public abstract class ModelService<T extends CytomineDomain> {
         try {
             return edit(fillDomainWithData(((CytomineDomain)currentDomain().getDeclaredConstructor().newInstance()), json), printMessage);
         } catch (Exception e) {
-            throw new ObjectNotFoundException("Cannot create instance of object: " + json + " Exception " + e);
+            throw new ObjectNotFoundException(
+                    "Cannot create instance of object: " + json + " Exception " + e,
+                    ErrorCode.NOT_FOUND_INSTANCE_CREATION.getValue(),
+                    Map.of("json", json, "exceptionMessage", e.getMessage()));
         }
     }
 
@@ -339,7 +342,7 @@ public abstract class ModelService<T extends CytomineDomain> {
         }
 
         if (domain == null) {
-            throw new ObjectNotFoundException(currentDomain() + " " + json.get("id") + " not found");
+            throw ObjectNotFoundException.notFoundException(currentDomain().toString(), json.get("id").toString());
         }
         CytomineDomain container = domain.container();
         if (container!=null) {
@@ -440,7 +443,7 @@ public abstract class ModelService<T extends CytomineDomain> {
             return (CytomineDomain)getEntityManager()
                     .find(Class.forName(domainClassName), domainIdent);
         } catch (ClassNotFoundException e) {
-            throw new ObjectNotFoundException(domainClassName, domainIdent);
+            throw ObjectNotFoundException.notFoundException(domainClassName, domainIdent);
         }
     }
 

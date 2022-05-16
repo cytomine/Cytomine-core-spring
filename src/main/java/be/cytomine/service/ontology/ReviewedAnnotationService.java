@@ -28,10 +28,7 @@ import be.cytomine.dto.AnnotationLight;
 import be.cytomine.dto.ReviewedAnnotationStatsEntry;
 import be.cytomine.dto.SimplifiedAnnotation;
 import be.cytomine.dto.UserTermMapping;
-import be.cytomine.exceptions.AlreadyExistException;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.ReviewedAnnotationListing;
 import be.cytomine.repository.image.ImageInstanceRepository;
 import be.cytomine.repository.ontology.ReviewedAnnotationRepository;
@@ -402,7 +399,7 @@ public class ReviewedAnnotationService extends ModelService {
             //terms in request param
             for (Long term : terms) {
                 review.getTerms().add(termRepository.findById(term)
-                        .orElseThrow(() -> new ObjectNotFoundException("Term", term)));
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", term)));
             }
         } else {
             //nothing in param, add term from annotation
@@ -424,9 +421,9 @@ public class ReviewedAnnotationService extends ModelService {
             throw new WrongArgumentException("There is no layer:" + usersIds);
         }
         List<SecUser> users = usersIds.stream()
-                .map(x -> userRepository.findById(x).orElseThrow(() -> new ObjectNotFoundException("User", x))).collect(Collectors.toList());
+                .map(x -> userRepository.findById(x).orElseThrow(() -> ObjectNotFoundException.notFoundException("User", x))).collect(Collectors.toList());
         ImageInstance imageInstance = imageInstanceRepository.findById(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
 
         if (!imageInstance.isInReviewMode()) {
             throw new WrongArgumentException("Cannot review annotation, enable image review mode!");
@@ -479,9 +476,9 @@ public class ReviewedAnnotationService extends ModelService {
 
         taskService.updateTask(task,2,"Extract parameters...");
         List<SecUser> users = usersIds.stream()
-                .map(x -> userRepository.findById(x).orElseThrow(() -> new ObjectNotFoundException("User", x))).collect(Collectors.toList());
+                .map(x -> userRepository.findById(x).orElseThrow(() -> ObjectNotFoundException.notFoundException("User", x))).collect(Collectors.toList());
         ImageInstance imageInstance = imageInstanceRepository.findById(imageInstanceId)
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageInstanceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , imageInstanceId));
 
         //check constraint
         taskService.updateTask(task,3,"Review "+users.size()+" layers...");

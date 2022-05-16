@@ -22,6 +22,7 @@ import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.social.PersistentImageConsultation;
 import be.cytomine.domain.social.PersistentProjectConnection;
 import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.CurrentUserService;
 import be.cytomine.service.project.ProjectService;
@@ -39,6 +40,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -62,7 +64,7 @@ public class RestProjectConnectionController extends RestCytomineController {
             @RequestBody JsonObject json
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         String session = RequestContextHolder.currentRequestAttributes().getSessionId();
         String os = json.getJSONAttrStr("os");
         String browser = json.getJSONAttrStr("browser");
@@ -76,7 +78,7 @@ public class RestProjectConnectionController extends RestCytomineController {
             @PathVariable("project") Long projectId
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         return responseSuccess(projectConnectionService.lastConnectionInProject(project, null, "created", "desc", 0L, 0L));
 
     }
@@ -87,7 +89,7 @@ public class RestProjectConnectionController extends RestCytomineController {
             @PathVariable("user") Long userId
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         return responseSuccess(projectConnectionService.lastConnectionInProject(project, List.of(userId), "created", "desc", 0L, 0L));
 
     }
@@ -100,9 +102,9 @@ public class RestProjectConnectionController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", userId));
 
         return responseSuccess(projectConnectionService.getConnectionByUserAndProject(user, project, max, offset));
 
@@ -116,7 +118,7 @@ public class RestProjectConnectionController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "false") Boolean heatmap
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
 
         if (heatmap) {
             return responseSuccess(projectConnectionService.numberOfConnectionsByProjectOrderedByHourAndDays(project, afterThan, null));
@@ -138,9 +140,10 @@ public class RestProjectConnectionController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "false") Boolean heatmap
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", userId));
+
         if (heatmap) {
             return responseSuccess(projectConnectionService.numberOfConnectionsByProjectOrderedByHourAndDays(project, afterThan, user));
         } else if(period!=null) {
@@ -181,7 +184,7 @@ public class RestProjectConnectionController extends RestCytomineController {
             @RequestParam(required = false) Long endDate
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         return responseSuccess(JsonObject.of("total", projectConnectionService.countByProject(project, startDate, endDate)));
     }
 
@@ -194,9 +197,9 @@ public class RestProjectConnectionController extends RestCytomineController {
             @RequestParam(required = false, value = "export") String export
     ) throws IOException {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", userId));
 
         Page<PersistentProjectConnection> page = projectConnectionService.getConnectionByUserAndProject(user, project, max, offset);
 

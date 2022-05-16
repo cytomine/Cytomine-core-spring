@@ -64,7 +64,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<?> handleException(ObjectNotFoundException exception) {
-        JsonObject jsonObject = JsonObject.of("errors", Map.of("message",  exception.getMessage()));
+        JsonObject jsonObject = exceptionToJsonObject(exception);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(jsonObject.toJsonString());
@@ -131,5 +131,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(jsonObject.toJsonString());
+    }
+
+    private JsonObject exceptionToJsonObject(CytomineException exception){
+        return JsonObject.of("errors", Map.of("message",  exception.getMessage(), "errorCode", exception.errorCode, "value", exception.values));
     }
 }

@@ -48,7 +48,7 @@ public class RestAnnotationIndexController extends RestCytomineController {
     ) {
         log.debug("REST request to get annotationindex for slice {}", id);
         SliceInstance sliceInstance = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance" , id));
         return responseSuccess(annotationIndexService.list(sliceInstance));
     }
 

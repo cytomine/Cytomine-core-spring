@@ -737,7 +737,8 @@ public class ImageInstanceService extends ModelService {
     }
 
     public SliceInstance getReferenceSlice(Long id) {
-        ImageInstance image = find(id).orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+        ImageInstance image = find(id)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance", id));
         return getReferenceSlice(image);
     }
 

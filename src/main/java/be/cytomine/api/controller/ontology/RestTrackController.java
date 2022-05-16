@@ -51,7 +51,7 @@ public class RestTrackController extends RestCytomineController {
         log.debug("REST request to list tracks for project {}", id);
         return projectRepository.findById(id)
                 .map( project -> responseSuccess(trackService.list(project)))
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
     }
 
     @GetMapping("/imageinstance/{id}/track.json")
@@ -61,7 +61,7 @@ public class RestTrackController extends RestCytomineController {
         log.debug("REST request to list tracks for imageinstance {}", id);
         return imageInstanceRepository.findById(id)
                 .map( imageInstance -> responseSuccess(trackService.list(imageInstance)))
-                .orElseThrow(() -> new ObjectNotFoundException("imageInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , id));
     }
 
 
@@ -74,7 +74,7 @@ public class RestTrackController extends RestCytomineController {
 //    ) {
 //        log.debug("REST request to count user annotation by user/project");
 //        Project project= projectService.find(idProject)
-//                .orElseThrow(() -> new ObjectNotFoundException("Project", idProject));
+//                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , idProject));
 //        Date start = (startDate!=null? new Date(startDate) : null);
 //        Date end = (endDate!=null? new Date(endDate) : null);
 //        return responseSuccess(JsonObject.of("total", userAnnotationService.countByProject(project, start, end)));

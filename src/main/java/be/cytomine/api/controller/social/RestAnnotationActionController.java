@@ -23,6 +23,7 @@ import be.cytomine.domain.ontology.AnnotationDomain;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.ontology.AnnotationDomainRepository;
 import be.cytomine.repositorynosql.social.AnnotationActionRepository;
@@ -39,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Controller for user position
@@ -73,7 +75,7 @@ public class RestAnnotationActionController extends RestCytomineController {
     ) {
         log.debug("REST request add annotation action");
         AnnotationDomain annotationDomain = annotationDomainRepository.findById(json.getJSONAttrLong("annotationIdent", 0L))
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", json.getJSONAttrStr("annotationIdent")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", json.getJSONAttrStr("annotationIdent")));
         return responseSuccess(annotationActionService.add(annotationDomain, currentUserService.getCurrentUser(), json.getJSONAttrStr("action"), new Date()));
     }
 
@@ -85,12 +87,12 @@ public class RestAnnotationActionController extends RestCytomineController {
             @RequestParam(value = "beforeThan", required = false) Long beforeThan
     ) {
         ImageInstance image = imageInstanceService.find(imageId)
-                        .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance",imageId));
 
         User user = null;
         if (userId!=null) {
             user = secUserService.findUser(userId)
-                    .orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", userId));
         }
         return responseSuccess(annotationActionService.list(image, user, afterThan, beforeThan));
     }
@@ -103,12 +105,12 @@ public class RestAnnotationActionController extends RestCytomineController {
             @RequestParam(value = "beforeThan", required = false) Long beforeThan
     ) {
         SliceInstance sliceInstance = sliceInstanceService.find(sliceId)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", sliceId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstace", sliceId));
 
         User user = null;
         if (userId!=null) {
             user = secUserService.findUser(userId)
-                    .orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", userId));
         }
         return responseSuccess(annotationActionService.list(sliceInstance, user, afterThan, beforeThan));
     }
@@ -121,7 +123,7 @@ public class RestAnnotationActionController extends RestCytomineController {
             @RequestParam(required = false) Long endDate
     ) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
 
         return responseSuccess(JsonObject.of("total", annotationActionService.countByProject(project, startDate, endDate)));
     }

@@ -237,7 +237,7 @@ public class AnnotationListingBuilder {
         Long idUser = params.getJSONAttrLong("user");
         if(idUser!=null) {
             return secUserService.find(idUser)
-                    .orElseThrow(() -> new ObjectNotFoundException("User", idUser))
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", idUser))
                     .isAlgo();
         } else {
             String idUsers = params.getJSONAttrStr("users");

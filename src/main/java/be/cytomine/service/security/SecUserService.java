@@ -1215,7 +1215,7 @@ public class SecUserService extends ModelService {
     @Override
     public CytomineDomain retrieve(JsonObject json) {
         return secUserRepository.findById(json.getJSONAttrLong("id"))
-                .orElseThrow(() -> new ObjectNotFoundException("SecUser", json.toJsonString()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", json.getJSONAttrLong("id")));
     }
 
 

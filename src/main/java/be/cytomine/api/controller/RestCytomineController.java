@@ -22,10 +22,7 @@ import be.cytomine.domain.CytomineSocialDomain;
 import be.cytomine.dto.JsonInput;
 import be.cytomine.dto.JsonMultipleObject;
 import be.cytomine.dto.JsonSingleObject;
-import be.cytomine.exceptions.CytomineException;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
-import be.cytomine.exceptions.InvalidRequestException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.service.ModelService;
 import be.cytomine.service.command.TransactionService;
 import be.cytomine.utils.CommandResponse;
@@ -56,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -475,7 +473,6 @@ public abstract class RestCytomineController {
      * E.g. annotation 34 was not found
      * className = annotation, id = 34.
      * @param className Type of domain not found
-     * @param id Domain id
      */
 //    private static JsonObject buildJsonNotFound(String className, String id) {
 //        return buildJsonNotFound(className, Map.of("id", id));
@@ -488,8 +485,15 @@ public abstract class RestCytomineController {
     private static JsonObject buildJsonNotFound(String className, Map<String, Object> filters) {
         log.info("responseNotFound $className $id");
         log.error(className + " with filter " + filters + " does not exist");
+
         JsonObject jsonObject = new JsonObject();
-        jsonObject.put("errors", Map.of("message",  className + " not found with filters : " + filters));
+        jsonObject.put("errors", Map.of(
+                "message",  className + " not found with filters : " + filters,
+                "errorCode", ErrorCode.NOT_FOUND_WITH_FILTERS.getValue(),
+                "values", Map.of(
+                        "id", filters.get("id"), "domain", className
+                ))
+        );
         return jsonObject;
     }
 

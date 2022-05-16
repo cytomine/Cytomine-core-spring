@@ -85,11 +85,11 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to count user annotation by user/project");
         SecUser user = secUserService.find(idUser)
-                .orElseThrow(() -> new ObjectNotFoundException("User", idUser));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", idUser));
         Project project = null;
         if (idProject!=null) {
             project = projectService.find(idProject)
-                    .orElseThrow(() -> new ObjectNotFoundException("Project", idProject));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , idProject));
         }
         return responseSuccess(JsonObject.of("total", userAnnotationService.count((User)user, project)));
     }
@@ -103,7 +103,7 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to count user annotation by user/project");
         Project project= projectService.find(idProject)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", idProject));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , idProject));
         Date start = (startDate!=null? new Date(startDate) : null);
         Date end = (endDate!=null? new Date(endDate) : null);
         return responseSuccess(JsonObject.of("total", userAnnotationService.countByProject(project, start, end)));
@@ -138,7 +138,7 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to create comment for annotation : " + json);
         UserAnnotation annotation = userAnnotationService.find(annotationId)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         json.put("annotationIdent", annotation.getId());
         json.put("annotationClassName", annotation.getClass().getName());
         return responseSuccess(sharedAnnotationService.add(json));
@@ -155,9 +155,9 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to read comment {} for annotation {}", commentId, annotationId);
         UserAnnotation annotation = userAnnotationService.find(annotationId)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(sharedAnnotationService.find(commentId).orElseThrow(() ->
-                new ObjectNotFoundException("SharedAnnotation", commentId)));
+                ObjectNotFoundException.notFoundException("SharedAnnotation", commentId)));
     }
 
     /**
@@ -169,7 +169,7 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) {
         log.debug("REST request to read comments for annotation {}", annotationId);
         UserAnnotation annotation = userAnnotationService.find(annotationId)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         return responseSuccess(sharedAnnotationService.listComments(annotation));
     }
 
@@ -247,7 +247,7 @@ public class RestUserAnnotationController extends RestCytomineController {
         log.debug("REST request to repeat user annotation : {} ", id);
 
         UserAnnotation annotation = userAnnotationService.find(id)
-                .orElseThrow(()-> new ObjectNotFoundException("Annotation", id));
+                .orElseThrow(()-> ObjectNotFoundException.notFoundException("Annotation", id));
         return responseSuccess(userAnnotationService.repeat(
                 annotation, json.getJSONAttrLong("repeat", 1L), json.getJSONAttrInteger("slice", null)));
     }
@@ -285,7 +285,7 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         UserAnnotation userAnnotation = userAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UserAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UserAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -348,7 +348,7 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         UserAnnotation userAnnotation = userAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UserAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UserAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -411,7 +411,7 @@ public class RestUserAnnotationController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract image");
         UserAnnotation userAnnotation = userAnnotationService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UserAnnotation", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UserAnnotation", id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);

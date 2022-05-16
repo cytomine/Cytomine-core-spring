@@ -19,6 +19,7 @@ package be.cytomine.api.controller.ontology;
 import be.cytomine.api.controller.RestCytomineController;
 import be.cytomine.domain.ontology.Relation;
 import be.cytomine.domain.ontology.Term;
+import be.cytomine.exceptions.InvalidRequestException;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.ontology.RelationRepository;
 import be.cytomine.repository.ontology.TermRepository;
@@ -55,11 +56,11 @@ public class RestRelationTermController extends RestCytomineController {
         log.debug("REST request to list terms");
 
         if (i!=1 && i!=2) {
-            throw new ObjectNotFoundException("'i' must be 1 or 2. Current value is " + i);
+            throw new InvalidRequestException("'i' must be 1 or 2. Current value is " + i);
         }
         return termRepository.findById(id)
                 .map( term -> responseSuccess(relationTermService.list(term, String.valueOf(i))))
-                .orElseThrow(() -> new ObjectNotFoundException("Term", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", id));
     }
 
     /**
@@ -73,7 +74,7 @@ public class RestRelationTermController extends RestCytomineController {
         log.debug("REST request to list terms");
         return termRepository.findById(id)
                 .map( term -> responseSuccess(relationTermService.list(term)))
-                .orElseThrow(() -> new ObjectNotFoundException("Term", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", id));
     }
 
 
@@ -96,11 +97,11 @@ public class RestRelationTermController extends RestCytomineController {
     ) {
         log.debug("REST request to get relation term {} {} {}", idRelation, idTerm1, idTerm2);
         Relation relation = relationRepository.findById(idRelation)
-                .orElseThrow(() -> new ObjectNotFoundException("Relation", idRelation));;
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Relation", idRelation));;
         Term term1 = termRepository.findById(idTerm1)
-                .orElseThrow(() -> new ObjectNotFoundException("Term", idTerm1));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", idTerm1));
         Term term2 = termRepository.findById(idTerm2).
-                orElseThrow(() -> new ObjectNotFoundException("Term", idTerm2));
+                orElseThrow(() -> ObjectNotFoundException.notFoundException("Term", idTerm2));
 
         return relationTermService.find(relation, term1, term2)
                 .map(this::responseSuccess)

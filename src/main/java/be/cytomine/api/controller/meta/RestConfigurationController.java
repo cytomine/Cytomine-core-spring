@@ -79,7 +79,7 @@ public class RestConfigurationController extends RestCytomineController {
         log.debug("REST request to edit Configuration : " + key);
         try {
             Configuration configuration = configurationService.findByKey(key)
-                    .orElseThrow(() -> new ObjectNotFoundException("Configuration", key));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Configuration" , key));
             json.put("id", configuration.getId());
             return update(configurationService, json);
         } catch (ObjectNotFoundException ex) {
@@ -92,7 +92,7 @@ public class RestConfigurationController extends RestCytomineController {
         log.debug("REST request to delete Configuration : " + key);
         Task existingTask = taskService.get(task);
         Configuration configuration = configurationService.findByKey(key)
-                .orElseThrow(() -> new ObjectNotFoundException("Configuration", key));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Configuration" , key));
         return delete(configurationService, JsonObject.of("id", configuration.getId()), existingTask);
     }
 

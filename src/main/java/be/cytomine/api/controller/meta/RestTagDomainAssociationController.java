@@ -87,7 +87,7 @@ public class RestTagDomainAssociationController extends RestCytomineController {
             domain = tagDomainAssociationService.getCytomineDomain(domainClassName, domainIdent);
         }
         if (domain == null) {
-            throw new ObjectNotFoundException(domainClassName, domainIdent);
+            throw ObjectNotFoundException.notFoundException(domainClassName, domainIdent);
         }
         return responseSuccess(tagDomainAssociationService.listAllByDomain(domain));
     }

@@ -24,10 +24,7 @@ import be.cytomine.domain.project.Project;
 import be.cytomine.domain.project.ProjectRepresentativeUser;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
-import be.cytomine.exceptions.AlreadyExistException;
-import be.cytomine.exceptions.ConstraintException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.ontology.OntologyRepository;
 import be.cytomine.repository.project.ProjectRepository;
 import be.cytomine.repository.project.ProjectRepresentativeUserRepository;
@@ -46,10 +43,7 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.security.acls.domain.BasePermission.*;
 
@@ -109,10 +103,10 @@ public class ProjectRepresentativeUserService extends ModelService {
         SecUser currentUser = currentUserService.getCurrentUser();
         securityACLService.check(jsonObject.getJSONAttrLong("project"),Project.class,WRITE);
         User user = secUserService.findUser(jsonObject.getJSONAttrLong("user"))
-                .orElseThrow(() -> new ObjectNotFoundException("User", jsonObject.getJSONAttrStr("user")));
-        Project project = projectRepository.findById(jsonObject.getJSONAttrLong("project"))
-                .orElseThrow(() -> new ObjectNotFoundException("Project", jsonObject.getJSONAttrStr("project")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("user", jsonObject.getJSONAttrStr("user")));
 
+        Project project = projectRepository.findById(jsonObject.getJSONAttrLong("project"))
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", jsonObject.getJSONAttrLong("project")));
         securityACLService.checkIsUserInProject(user, project);
 
         return executeCommand(new AddCommand(currentUser),null,jsonObject);

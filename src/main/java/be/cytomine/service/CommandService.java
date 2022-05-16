@@ -20,6 +20,7 @@ import be.cytomine.domain.ValidationError;
 import be.cytomine.domain.command.*;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.CytomineException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.command.CommandRepository;
 import be.cytomine.service.project.ProjectService;
@@ -103,7 +104,7 @@ public class CommandService {
         if (c instanceof DeleteCommand) {
             return processCommand(c, service, SUCCESS_DELETE_CODE);
         }
-        throw new ObjectNotFoundException("Command not supported");
+        throw new ObjectNotFoundException("Command not supported", ErrorCode.NOT_FOUND_COMMAND.getValue());
     }
 
     /**
@@ -204,7 +205,7 @@ public class CommandService {
                 //browse all command and undo it while its the same transaction
                 if(undoStack.getCommand().isRefuseUndo()) {
                     //responseError(new ObjectNotFoundException("You cannot delete your last operation!")) //undo delete project is not possible
-                    throw new ObjectNotFoundException("You cannot delete your last operation!"); //undo delete project is not possible
+                    throw new ObjectNotFoundException("You cannot delete your last operation!", ErrorCode.NOT_FOUND_UNDO_OPERATION.getValue()); //undo delete project is not possible
                 }
                 result = performUndo(undoStack.getCommand());
                 log.info("Undo stack transaction: " + result);

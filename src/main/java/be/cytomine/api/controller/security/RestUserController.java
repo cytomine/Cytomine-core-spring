@@ -90,7 +90,7 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list admins from project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
         return responseSuccess(secUserService.listAdmins(project), isFilterRequired());
     }
 
@@ -100,7 +100,7 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list representatives from project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
         return responseSuccess(projectRepresentativeUserService.listByProject(project).stream().map(ProjectRepresentativeUser::getUser)
                 .collect(Collectors.toList()), isFilterRequired());
     }
@@ -111,8 +111,8 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list creator from project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
-        return responseSuccess(List.of(secUserService.findCreator(project).orElseThrow(() -> new ObjectNotFoundException("Project", "CREATOR"))));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
+        return responseSuccess(List.of(secUserService.findCreator(project).orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , "CREATOR"))));
     }
 
 
@@ -122,7 +122,7 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list user from ontology {}", id);
         Ontology ontology = ontologyService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Ontology", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Ontology", id));
         return responseSuccess(secUserService.listUsers(ontology), isFilterRequired());
     }
 
@@ -133,7 +133,7 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list user layers from project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
         ImageInstance image  = imageInstanceService.find(idImage).orElse(null);
 
         return responseSuccess(secUserService.listLayers(project, image), isFilterRequired());
@@ -146,7 +146,7 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list user from storage {}", id);
         Storage storage = storageService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Storage", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Storage", id));
         return responseSuccess(secUserService.listUsers(storage), isFilterRequired());
     }
 
@@ -165,7 +165,7 @@ public class RestUserController extends RestCytomineController {
         log.debug("REST request to list user");
         if (publicKey != null) {
             return responseSuccess(secUserService.findByPublicKey(publicKey)
-                    .orElseThrow(() -> new ObjectNotFoundException("User", JsonObject.of("publicKey", publicKey).toJsonString())));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", JsonObject.of("publicKey", publicKey).toJsonString())));
         }
 
         UserSearchExtension userSearchExtension = new UserSearchExtension();
@@ -200,7 +200,7 @@ public class RestUserController extends RestCytomineController {
     @GetMapping("/userkey/{publicKey}/keys.json")
     public ResponseEntity<String> keys(@PathVariable String publicKey) {
         SecUser user = secUserService.findByPublicKey(publicKey)
-                .orElseThrow(() -> new ObjectNotFoundException("User", Map.of("publicKey", publicKey).toString()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", Map.of("publicKey", publicKey).toString()));
         securityACLService.checkIsSameUser(user, currentUserService.getCurrentUser());
         return responseSuccess(JsonObject.of("privateKey", user.getPrivateKey(), "publicKey", user.getPublicKey()));
     }
@@ -208,7 +208,7 @@ public class RestUserController extends RestCytomineController {
     @GetMapping("/user/{id}/keys.json")
     public ResponseEntity<String> keysById(@PathVariable String id) {
         SecUser user = secUserService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("User", Map.of("id or username", id).toString()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", Map.of("id or username", id).toString()));
         securityACLService.checkIsSameUser(user, currentUserService.getCurrentUser());
         return responseSuccess(JsonObject.of("privateKey", user.getPrivateKey(), "publicKey", user.getPublicKey()));
     }
@@ -282,7 +282,7 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> lock(@PathVariable Long id) {
         log.debug("REST request to lock User : {}", id);
         SecUser user = secUserService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("User", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", id));
         return responseSuccess(secUserService.lock(user));
     }
 
@@ -290,7 +290,7 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> unlock(@PathVariable Long id) {
         log.debug("REST request to lock User : {}", id);
         SecUser user = secUserService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("User", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", id));
         return responseSuccess(secUserService.unlock(user));
     }
 
@@ -310,7 +310,7 @@ public class RestUserController extends RestCytomineController {
     ) {
         log.debug("REST request to list user from project {}", id);
         Project project = projectService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , id));
 
         UserSearchExtension userSearchExtension = new UserSearchExtension();
         userSearchExtension.setWithLastImage(withLastImage);
@@ -331,9 +331,9 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> addUserToProject(@PathVariable("project") Long projectId, @PathVariable("user") Long userId) {
         log.debug("REST request to add User {} to project {}", userId, projectId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         secUserService.addUserToProject(user, project, false);
         return responseSuccess(JsonObject.of("data", JsonObject.of("message", "OK")).toJsonString());
     }
@@ -342,7 +342,7 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> addUsersToProject(@PathVariable("project") Long projectId, @RequestParam("users") String users) {
         log.debug("REST request to add Users {} to project {}", users, projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         List<String> usersIds = Arrays.stream(users.split(",")).collect(Collectors.toList());
 
@@ -395,9 +395,9 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> deleteUserFromProject(@PathVariable("project") Long projectId, @PathVariable("user") Long userId) {
         log.debug("REST request to remove User {} from project {}", userId, projectId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         secUserService.deleteUserFromProject(user, project, false);
         return responseSuccess(JsonObject.of("data", JsonObject.of("message", "OK")).toJsonString());
     }
@@ -406,7 +406,7 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> deleteUsersFromProject(@PathVariable("project") Long projectId, @RequestParam("users") String users) {
         log.debug("REST request to add Users {} to project {}", users, projectId);
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         List<String> usersIds = Arrays.stream(users.split(",")).collect(Collectors.toList());
 
@@ -459,9 +459,9 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> addUserAdminToProject(@PathVariable("project") Long projectId, @PathVariable("user") Long userId) {
         log.debug("REST request to add User {} to project {}", userId, projectId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         secUserService.addUserToProject(user, project, true);
         return responseSuccess(JsonObject.of("data", JsonObject.of("message", "OK")).toJsonString());
     }
@@ -470,9 +470,9 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> deleteUserAdminFromProject(@PathVariable("project") Long projectId, @PathVariable("user") Long userId) {
         log.debug("REST request to remove User {} from project {}", userId, projectId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         if (!Objects.equals(currentUserService.getCurrentUser().getId(), user.getId())) {
             securityACLService.check(project,ADMINISTRATION);
         }
@@ -484,9 +484,9 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> addUserToStorage(@PathVariable("storage") Long storageId, @PathVariable("user") Long userId) {
         log.debug("REST request to add User {} to storage {}", userId, storageId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Storage storage = storageService.find(storageId)
-                .orElseThrow(() -> new ObjectNotFoundException("Storage", storageId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Storage", storageId));
         secUserService.addUserToStorage(user, storage);
         return responseSuccess(JsonObject.of("data", JsonObject.of("message", "OK")).toJsonString());
     }
@@ -495,9 +495,9 @@ public class RestUserController extends RestCytomineController {
     public ResponseEntity<String> deleteUserFromStorage(@PathVariable("storage") Long storageId, @PathVariable("user") Long userId) {
         log.debug("REST request to remove User {} from storage {}", userId, storageId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Storage storage = storageService.find(storageId)
-                .orElseThrow(() -> new ObjectNotFoundException("Storage", storageId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Storage", storageId));
         secUserService.deleteUserFromStorage(user, storage);
         return responseSuccess(JsonObject.of("data", JsonObject.of("message", "OK")).toJsonString());
     }
@@ -508,7 +508,7 @@ public class RestUserController extends RestCytomineController {
                                                 @RequestBody JsonObject json) {
         log.debug("REST request to resetpassword for User {}", userId);
         SecUser user = secUserService.find(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         String newPassword = json.getJSONAttrStr("password");
         if (StringUtils.isNotBlank(newPassword)) {
             secUserService.changeUserPassword((User) user,newPassword);
@@ -540,7 +540,7 @@ public class RestUserController extends RestCytomineController {
         log.debug("REST request to list user layers from project {}", id);
 
         User user = secUserService.findUser(id)
-                .orElseThrow(() -> new ObjectNotFoundException("User", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", id));
 
         List<SecUser> friends = new ArrayList<>();
 
@@ -548,7 +548,7 @@ public class RestUserController extends RestCytomineController {
             if (projectId!=null) {
                 //get all user project list
                 Project project = projectService.find(projectId)
-                        .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
                 friends = secUserService.listUsers(project);
             } else {
                 //get all people that share common project with user
@@ -558,7 +558,7 @@ public class RestUserController extends RestCytomineController {
             if (projectId!=null) {
                 //get user project online
                 Project project = projectService.find(projectId)
-                        .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
                 friends = secUserService.getAllFriendsUsersOnline(user, project);
             } else {
                 //get friends online
@@ -576,7 +576,7 @@ public class RestUserController extends RestCytomineController {
         log.debug("REST request to list online user for project {}", projectId);
 
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(secUserService.getAllOnlineUserWithTheirPositions(project), isFilterRequired());
     }
 
@@ -587,7 +587,7 @@ public class RestUserController extends RestCytomineController {
         log.debug("REST request to list online user for project {}", projectId);
 
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
         return responseSuccess(secUserService.getUsersWithLastActivities(project), isFilterRequired());
     }
 
@@ -600,7 +600,7 @@ public class RestUserController extends RestCytomineController {
         log.debug("REST request to download user listing from a specific project : {}", projectId);
 
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         List<SecUser> projectUsers = secUserService.listUsers(project);
         List<Map<String, Object>> users = new ArrayList<>();
@@ -627,9 +627,9 @@ public class RestUserController extends RestCytomineController {
         log.debug("REST request to list activities for user {} and for project {}", userId, projectId);
 
         User user = secUserService.findUser(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", userId));
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project" , projectId));
 
         return responseSuccess(secUserService.getResumeActivities(project, user), isFilterRequired());
     }

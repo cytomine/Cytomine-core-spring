@@ -21,6 +21,7 @@ import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.social.LastConnection;
 import be.cytomine.domain.social.PersistentConnection;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repositorynosql.social.LastConnectionRepository;
 import be.cytomine.repositorynosql.social.PersistentConnectionRepository;
@@ -40,6 +41,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -57,7 +59,7 @@ public class TaskController extends RestCytomineController {
     public ResponseEntity<String> show(@PathVariable Long id) {
         Task task = taskService.get(id);
         if (task == null) {
-            throw new ObjectNotFoundException("Task", id);
+            throw ObjectNotFoundException.notFoundException("Task", id);
         }
         JsonObject jsonObject = task.toJsonObject();
         jsonObject.put("comments", taskService.getLastComments(task,5));
@@ -83,7 +85,7 @@ public class TaskController extends RestCytomineController {
     @GetMapping("/project/{project}/task/comment.json")
     public ResponseEntity<String> listCommentByProject(@PathVariable(value = "project") Long projectId) {
         Project project = projectService.find(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", projectId));
         return responseSuccess(taskService.listLastComments(project));
     }
 }

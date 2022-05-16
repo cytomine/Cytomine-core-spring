@@ -38,6 +38,11 @@ public abstract class CytomineException extends RuntimeException {
     public String msg;
 
     /**
+     * Error code for WebUI message
+     */
+    public int errorCode;
+
+    /**
      * Values of the exception
      */
     public Map<Object, Object> values;
@@ -48,21 +53,34 @@ public abstract class CytomineException extends RuntimeException {
      * @param code Http code
      */
     public CytomineException(String msg, int code) {
-        this(msg,code,new HashMap<>());
+        this(msg,code,0,new HashMap<>());
+    }
+
+    public CytomineException(String msg, int code, int errorCode) {
+        this(msg,code,errorCode,new HashMap<>());
     }
 
     public CytomineException(String msg, int code, Throwable cause) {
-        this(msg,code,new HashMap<>(), cause);
+        this(msg,code,0,new HashMap<>(), cause);
     }
 
+    public CytomineException(String msg, int code, int errorCode, Throwable cause) {
+        this(msg,code,errorCode,new HashMap<>(), cause);
+    }
 
     public CytomineException(String msg, int code, Map<Object, Object> values) {
-        this(msg, code, values, null);
+        this(msg, code, 0, values, null);
     }
-    public CytomineException(String msg, int code, Map<Object, Object> values, Throwable cause) {
+
+    public CytomineException(String msg, int code, int errorCode, Map<Object, Object> values) {
+        this(msg, code, errorCode, values, null);
+    }
+
+    public CytomineException(String msg, int code, int errorCode, Map<Object, Object> values, Throwable cause) {
         super(msg, cause);
         this.msg=msg;
         this.code = code;
+        this.errorCode = errorCode;
         this.values = values;
     }
 

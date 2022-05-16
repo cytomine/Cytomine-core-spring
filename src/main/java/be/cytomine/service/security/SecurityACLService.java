@@ -26,10 +26,7 @@ import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
 import be.cytomine.domain.security.UserJob;
-import be.cytomine.exceptions.ConstraintException;
-import be.cytomine.exceptions.ForbiddenException;
-import be.cytomine.exceptions.ObjectNotFoundException;
-import be.cytomine.exceptions.WrongArgumentException;
+import be.cytomine.exceptions.*;
 import be.cytomine.repository.image.ImageInstanceRepository;
 import be.cytomine.repository.ontology.OntologyRepository;
 import be.cytomine.repository.project.ProjectRepository;
@@ -48,10 +45,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.security.acls.domain.BasePermission.ADMINISTRATION;
@@ -99,10 +93,10 @@ public class SecurityACLService {
             if (domain!=null) {
                 check(domain,permission);
             } else {
-                throw new ObjectNotFoundException("ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking");
+                throw notFoundACLError(className.toString(), id);
             }
         } catch(IllegalArgumentException ex) {
-            throw new ObjectNotFoundException("ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking");
+            throw notFoundACLError(className.toString(), id);
         }
 
     }
@@ -117,7 +111,7 @@ public class SecurityACLService {
                 throw new ForbiddenException("You don't have the right to do this. You must be the creator or the container admin");
             }
         } else {
-            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking");
+            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking", ErrorCode.NOT_FOUND_ACL_ERROR_NULL_DOMAIN.getValue());
         }
 
     }
@@ -129,7 +123,7 @@ public class SecurityACLService {
                 throw new ForbiddenException("You don't have the right to read or modify this resource! "  + domain.getClass() + " " + domain.getId());
             }
         } else {
-            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking");
+            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking", ErrorCode.NOT_FOUND_ACL_ERROR_NULL_DOMAIN.getValue());
         }
     }
 
@@ -288,10 +282,10 @@ public class SecurityACLService {
             if (domain!=null) {
                 checkIsNotReadOnly(domain);
             } else {
-                throw new ObjectNotFoundException("ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking");
+                throw notFoundACLError(className, id);
             }
         } catch(IllegalArgumentException | ClassNotFoundException ex) {
-            throw new ObjectNotFoundException("ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking");
+            throw notFoundACLError(className, id);
         }
 
     }
@@ -307,7 +301,7 @@ public class SecurityACLService {
                 throw new ForbiddenException("The project for this data is in readonly mode! You must be project manager to add, edit or delete this resource in a readonly project.");
             }
         } else {
-            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking");
+            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking", ErrorCode.NOT_FOUND_ACL_ERROR_NULL_DOMAIN.getValue());
         }
     }
 
@@ -319,7 +313,7 @@ public class SecurityACLService {
                     throw new ForbiddenException("You don't have the right to do this. You must be the creator or the container admin");
                 }
             } else {
-                throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking");
+                throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking", ErrorCode.NOT_FOUND_ACL_ERROR_NULL_DOMAIN.getValue());
             }
         }
 
@@ -337,10 +331,10 @@ public class SecurityACLService {
             if (domain!=null) {
                 checkFullOrRestrictedForOwner(domain, (owner!=null && objectHasProperty(domain, owner) ? (SecUser) fieldValue(domain.getClass(), domain, owner) : null));
             } else {
-                throw new ObjectNotFoundException("ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking");
+                throw notFoundACLError(className, id);
             }
         } catch(IllegalArgumentException | ClassNotFoundException ex) {
-            throw new ObjectNotFoundException("ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking");
+            throw notFoundACLError(className, id);
         }
     }
 
@@ -367,11 +361,11 @@ public class SecurityACLService {
                 case READ_ONLY :
                     throw new ForbiddenException("The project for this data is in "+((Project) retrieveContainer(domain)).getMode().name()+" mode! You must be project manager to add, edit or delete this resource.");
                 default :
-                    throw new ObjectNotFoundException("ACL error: project editing mode is unknown! Unable to process project auth checking");
+                    throw new ObjectNotFoundException("ACL error: project editing mode is unknown! Unable to process project auth checking", ErrorCode.NOT_FOUND_ACL_ERROR_EDITING_MODE.getValue());
 
             }
         } else {
-            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking");
+            throw new ObjectNotFoundException("ACL error: domain is null! Unable to process project auth checking", ErrorCode.NOT_FOUND_ACL_ERROR_NULL_DOMAIN.getValue());
         }
     }
 
@@ -448,5 +442,12 @@ public class SecurityACLService {
             }
         }
         return domain.container();
+    }
+
+    private ObjectNotFoundException notFoundACLError(String className, Long id){
+        return new ObjectNotFoundException(
+                "ACL error: " + className + " with id "+ id + " was not found! Unable to process auth checking",
+                ErrorCode.NOT_FOUND_ACL_ERROR.getValue(),
+                Map.of("className", className, "id", id));
     }
 }

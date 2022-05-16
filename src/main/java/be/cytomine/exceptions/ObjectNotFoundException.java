@@ -18,6 +18,9 @@ package be.cytomine.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * User: lrollus
  * Date: 17/11/11
@@ -32,21 +35,48 @@ public class ObjectNotFoundException extends CytomineException {
      * @param message Message
      */
     public ObjectNotFoundException(String message) {
-        super(message,404);
+        super(message,404,0,new HashMap<>());
+        log.warn(message);
+    }
+
+    public ObjectNotFoundException(String message, int errorCode) {
+        super(message,404,errorCode,new HashMap<>());
+        log.warn(message);
+    }
+
+    public ObjectNotFoundException(String message, int errorCode, Map<Object, Object> values) {
+        super(message,404,errorCode,values);
         log.warn(message);
     }
 
     public ObjectNotFoundException(String objectType, Object objectId) {
-        super(objectType + " " + objectId + " not found",404);
+        super(objectType + " " + objectId + " not found",404,0,new HashMap<>());
         log.warn(super.getMessage());
     }
 
-    public ObjectNotFoundException(String objectType, String objectId) {
-        super(objectType + " " + objectId + " not found",404);
+    public ObjectNotFoundException(String objectType, Object objectId, int errorCode, Map<Object, Object> values) {
+        super(objectType + " " + objectId + " not found",404,errorCode,values);
         log.warn(super.getMessage());
     }
 
-    public ObjectNotFoundException(String objectType, Long objectId) {
-        this(objectType, String.valueOf(objectId));
+    public ObjectNotFoundException(String objectType, String objectId, int errorCode, Map<Object, Object> values) {
+        super(objectType + " " + objectId + " not found", 404, errorCode, values);
+        log.warn(super.getMessage());
+    }
+
+    public ObjectNotFoundException(String objectType, Long objectId, int errorCode, Map<Object, Object> values) {
+        this(objectType, String.valueOf(objectId), errorCode, values);
+    }
+
+    public static ObjectNotFoundException notFoundException(String object, Long id){
+        return notFoundException(object, Long.toString(id));
+    }
+
+    public static ObjectNotFoundException notFoundException(String object, String id){
+        return new ObjectNotFoundException(
+                object,
+                id,
+                ErrorCode.NOT_FOUND_WITH_ID.getValue(),
+                Map.of("object", object, "id", id));
     }
 }

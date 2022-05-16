@@ -53,7 +53,7 @@ public class RestAnnotationTrackController extends RestCytomineController {
     ) {
         log.debug("REST request to list annotationTracks for track {}", id);
         return responseSuccess(annotationTrackService.list(trackService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Track", id))));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Track", id))));
     }
 
     @GetMapping("/annotation/{id}/annotationtrack.json")
@@ -62,7 +62,7 @@ public class RestAnnotationTrackController extends RestCytomineController {
     ) {
         log.debug("REST request to list annotationTracks for annotation {}", id);
         return responseSuccess(annotationTrackService.list(annotationDomainRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", id))));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", id))));
     }
 
 
@@ -73,9 +73,9 @@ public class RestAnnotationTrackController extends RestCytomineController {
             ) {
         log.debug("REST request to get AnnotationTrack : {} {}", annotationId, trackId);
         AnnotationDomain annotationDomain = annotationDomainRepository.findById(annotationId)
-                .orElseThrow(() -> new ObjectNotFoundException("Annotation", annotationId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Annotation", annotationId));
         Track track = trackService.find(trackId)
-                .orElseThrow(() -> new ObjectNotFoundException("Track", trackId));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("Track", trackId));
 
         return annotationTrackService.find(annotationDomain, track)
                 .map(this::responseSuccess)

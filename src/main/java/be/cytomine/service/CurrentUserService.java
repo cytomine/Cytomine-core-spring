@@ -17,6 +17,7 @@ package be.cytomine.service;
 */
 
 import be.cytomine.domain.security.SecUser;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ForbiddenException;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.exceptions.ServerException;
@@ -51,7 +52,12 @@ public class CurrentUserService {
         if (currentUser.isFullObjectProvided() || currentUser.isUsernameProvided()) {
             return currentUser.getUser().getUsername();
         } else {
-            throw new ObjectNotFoundException("User", "Cannot read current username. Object " + currentUser + " is not supported");
+            throw new ObjectNotFoundException(
+                    "User",
+                    "Cannot read current username. Object " + currentUser + " is not supported",
+                    ErrorCode.NOT_FOUND_USER_NOT_SUPPORTED.getValue(),
+                    Map.of("user", currentUser)
+            );
         }
     }
 
@@ -63,7 +69,12 @@ public class CurrentUserService {
         } else if(currentUser.isUsernameProvided()) {
             secUser = secUserRepository.findByUsernameLikeIgnoreCase(currentUser.getUser().getUsername()).orElseThrow(() -> new ServerException("Cannot find current user with username " + currentUser.getUser().getUsername()));
         } else {
-            throw new ObjectNotFoundException("User", "Cannot read current user. Object " + currentUser + " is not supported");
+            throw new ObjectNotFoundException(
+                    "User",
+                    "Cannot read current username. Object " + currentUser + " is not supported",
+                    ErrorCode.NOT_FOUND_USER_NOT_SUPPORTED.getValue(),
+                    Map.of("user", currentUser)
+            );
         }
         checkAccountStatus(secUser);
         return secUser;

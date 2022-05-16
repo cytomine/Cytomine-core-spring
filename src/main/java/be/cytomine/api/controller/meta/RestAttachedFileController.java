@@ -70,7 +70,7 @@ public class RestAttachedFileController extends RestCytomineController {
     public ResponseEntity<String> show(@PathVariable Long id) {
         log.debug("REST request to show attached file {}", id);
         return responseSuccess(attachedFileService.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AttachedFile", id)));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AttachedFile" , id)));
     }
 
 
@@ -78,7 +78,7 @@ public class RestAttachedFileController extends RestCytomineController {
     public void download(@PathVariable Long id) throws IOException {
         log.debug("REST request to download attached file {}", id);
         AttachedFile attachedFile = attachedFileService.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AttachedFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AttachedFile" , id));
         responseFile(attachedFile.getFilename(), attachedFile.getData());
     }
 

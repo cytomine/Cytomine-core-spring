@@ -147,7 +147,7 @@ public class SharedAnnotationService extends ModelService {
         securityACLService.checkUser(sender);
 
         AnnotationDomain annotation = annotationDomainRepository.findById(jsonObject.getJSONAttrLong("annotationIdent"))
-                        .orElseThrow(() -> new ObjectNotFoundException("Annotation", jsonObject.getJSONAttrStr("annotationIdent")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AnnotationDomain", jsonObject.getJSONAttrStr("annotationIdent")));
 
         jsonObject.putIfAbsent("sender", sender.getId());
 

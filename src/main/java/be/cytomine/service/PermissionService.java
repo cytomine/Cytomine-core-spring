@@ -19,6 +19,7 @@ package be.cytomine.service;
 import be.cytomine.domain.CytomineDomain;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.security.User;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.security.AclRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Slf4j
@@ -81,7 +83,11 @@ public class PermissionService {
             Long sid = aclRepository.getAclSid(username);
 
             if(aclObjectIdentity==null || sid==null) {
-                throw new ObjectNotFoundException("User " + username + " or Object " + domain.getId() + " are not in ACL");
+                throw new ObjectNotFoundException(
+                        "User " + username + " or Object " + domain.getId() + " are not in ACL",
+                        ErrorCode.NOT_FOUND_NOT_ACL.getValue(),
+                        Map.of("username", username, "objectId", domain.getId())
+                );
             }
             aclRepository.deleteAclEntry(aclObjectIdentity, mask, sid);
 

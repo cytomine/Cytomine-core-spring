@@ -24,6 +24,7 @@ import be.cytomine.domain.ontology.Term;
 import be.cytomine.domain.ontology.Track;
 import be.cytomine.domain.project.Project;
 import be.cytomine.domain.security.SecUser;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.exceptions.WrongArgumentException;
 import lombok.Data;
@@ -408,7 +409,7 @@ public abstract class AnnotationListing {
         if (images!=null && project!=null && images.size() == entityManager.find(Project.class, project).getCountImages()) {
             return ""; //images number equals to project image number, no const needed
         } else if (images!=null && images.isEmpty()) {
-            throw new ObjectNotFoundException("The image has been deleted!");
+            throw new ObjectNotFoundException("The image has been deleted!", ErrorCode.NOT_FOUND_DELETED.getValue(), Map.of("object", "image"));
         } else {
             return (images!=null ? "AND a.image_id IN ("+joinValues(images)+")\n" : "");
         }
@@ -419,7 +420,10 @@ public abstract class AnnotationListing {
         if (image!=null) {
             ImageInstance imageInstance = entityManager.find(ImageInstance.class, image);
             if (imageInstance==null) {
-                throw new ObjectNotFoundException("Image " + image + " not exist!");
+                throw new ObjectNotFoundException(
+                        "Image " + image + " not exist!",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "Image", "id", image));
             }
             return "AND a.image_id = " + imageInstance.getId() + "\n";
         } else {
@@ -429,7 +433,7 @@ public abstract class AnnotationListing {
 
     String getSlicesConst() {
         if (slices!=null && slices.isEmpty()) {
-            throw new ObjectNotFoundException("The slice has been deleted!");
+            throw new ObjectNotFoundException("The slice has been deleted!", ErrorCode.NOT_FOUND_DELETED.getValue(), Map.of("object", "slice"));
         } else {
             return (slices!=null ? "AND a.slice_id IN ("+joinValues(slices)+")\n" : "");
         }
@@ -439,7 +443,10 @@ public abstract class AnnotationListing {
     String getSliceConst() {
         if (slice!=null) {
             if (entityManager.find(SliceInstance.class, slice)==null) {
-                throw new ObjectNotFoundException("Slice "+slice+" not exist!");
+                throw new ObjectNotFoundException(
+                        "Slice "+slice+" not exist!",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "Slice", "id", slice));
             }
             return "AND a.slice_id = " + slice + "\n";
         } else {
@@ -450,7 +457,10 @@ public abstract class AnnotationListing {
     String getUserConst() {
         if (user!=null) {
             if (entityManager.find(SecUser.class, user)==null) {
-                throw new ObjectNotFoundException("User "+user+" not exist!");
+                throw new ObjectNotFoundException(
+                        "User "+user+" not exist!",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "User", "id", user));
             }
             return "AND a.user_id = "+user+"\n";
         } else {
@@ -471,7 +481,10 @@ public abstract class AnnotationListing {
     String getMaxDistanceAnnotationConst() {
         if(maxDistanceBaseAnnotation!=null) {
             if(baseAnnotation==null) {
-                throw new ObjectNotFoundException("You need to provide a 'baseAnnotation' parameter (annotation id/location = "+baseAnnotation+")!");
+                throw new ObjectNotFoundException(
+                        "You need to provide a 'baseAnnotation' parameter (annotation id/location = "+baseAnnotation+")!",
+                        ErrorCode.NOT_FOUND_BASE_ANNOTATION.getValue(),
+                        Map.of("baseAnnotation", baseAnnotation));
             } else {
                 try {
                     AnnotationDomain base = AnnotationDomain.getAnnotationDomain(entityManager, ((Long)baseAnnotation), null);
@@ -493,7 +506,10 @@ public abstract class AnnotationListing {
     String getTermConst() {
         if (term!=null) {
             if (entityManager.find(Term.class, term)==null) {
-                throw new ObjectNotFoundException("Term " + term + "not exist!");
+                throw new ObjectNotFoundException(
+                        "Term " + term + "not exist!",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "Term", "id", term));
             }
             addIfMissingColumn("term");
 
@@ -529,7 +545,10 @@ public abstract class AnnotationListing {
     String getTrackConst() {
         if (track!=null) {
             if (entityManager.find(Track.class, track)!=null) {
-                throw new ObjectNotFoundException("Track " + track + " not exists !");
+                throw new ObjectNotFoundException(
+                        "Track " + track + " not exists !",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "Track", "id", track));
             }
             addIfMissingColumn("track");
             return " AND (atr.track_id = "+track + ((noTrack) ? " OR atr.track_id IS NULL" : "") + ")\n";
@@ -574,7 +593,10 @@ public abstract class AnnotationListing {
             Long sliceId = (beforeSlice!=null) ? beforeSlice : afterSlice;
             SliceInstance sliceInstance = entityManager.find(SliceInstance.class, sliceId);
             if (sliceInstance==null) {
-                throw new ObjectNotFoundException("Slice "+ sliceId +" not exists !");
+                throw new ObjectNotFoundException(
+                        "Slice " + sliceId + " not exists !",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "Slice", "id", sliceId));
             }
             String sign = (beforeSlice!=null) ? "<" : ">";
             return "AND (asl.channel + ai.channels * (asl.z_stack + ai.depth * asl.time)) "+sign+" " + sliceInstance.getBaseSlice().getRank() +"\n";
@@ -590,7 +612,10 @@ public abstract class AnnotationListing {
     String getSuggestedTermConst() {
         if (suggestedTerm!=null) {
             if (entityManager.find(Term.class, suggestedTerm)!=null) {
-                throw new ObjectNotFoundException("Term "+suggestedTerm+" not exist!");
+                throw new ObjectNotFoundException(
+                        "Term " + suggestedTerm + " not exists !",
+                        ErrorCode.NOT_FOUND_NOT_EXIST.getValue(),
+                        Map.of("object", "Term", "id", suggestedTerm));
             }
             addIfMissingColumn("algo");
             return "AND aat.term_id = "+suggestedTerm+"  AND aat.deleted IS NULL \n";

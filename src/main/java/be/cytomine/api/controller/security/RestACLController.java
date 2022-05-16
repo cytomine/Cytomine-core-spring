@@ -20,6 +20,7 @@ import be.cytomine.api.controller.RestCytomineController;
 import be.cytomine.domain.CytomineDomain;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.CytomineException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.security.AclAuthService;
 import be.cytomine.utils.JsonObject;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -52,14 +54,21 @@ public class RestACLController extends RestCytomineController {
         log.debug("REST request to get permission : {} {} {}", domainClassName, domainIdent, user);
 
         try {
-            if(domainClassName!=null && domainIdent!=null && user!=null) {
+            // if(domainClassName!=null && domainIdent!=null && user!=null) {
+            if(false){
                 //CytomineDomain domain = retrieveCytomineDomain(domainClassName,Long.parseLong(domainIdent));
                 SecUser secUser = entityManager.find(SecUser.class, Long.parseLong(user));
                 return responseSuccess(aclAuthService.get(Long.parseLong(domainIdent),secUser));
             } else {
-                throw new ObjectNotFoundException("Request not valid: domainClassName="+ domainClassName + ", domainIdent= " + domainIdent + ", user=" + user);
+                throw new ObjectNotFoundException("");
             }
         } catch(CytomineException e) {
+            if(e.getClass() == ObjectNotFoundException.class){
+                throw new ObjectNotFoundException(
+                        "Request not valid: domainClassName="+ domainClassName + ", domainIdent= " + domainIdent + ", user=" + user,
+                        ErrorCode.NOT_FOUND_NOT_VALID.getValue(),
+                        Map.of("domainClassName", domainClassName, "domainIdent", domainIdent, "user", user));
+            }
             return ResponseEntity.status(e.code).body(JsonObject.of("success", false, "errors", e.msg).toJsonString());
         }
     }

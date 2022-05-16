@@ -25,6 +25,7 @@ import be.cytomine.domain.image.UploadedFile;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.exceptions.AlreadyExistException;
 import be.cytomine.exceptions.ConstraintException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.repository.image.AbstractSliceRepository;
 import be.cytomine.repository.image.SliceInstanceRepository;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,7 +73,8 @@ public class AbstractSliceService extends ModelService {
     }
 
     public SecUser findImageUploaded(Long abstractSliceId) {
-        AbstractSlice abstractSlice = find(abstractSliceId).orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", abstractSliceId));
+        AbstractSlice abstractSlice = find(abstractSliceId)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice", abstractSliceId));
         return Optional.ofNullable(abstractSlice.getUploadedFile()).map(UploadedFile::getUser).orElse(null);
     }
 

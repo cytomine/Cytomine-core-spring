@@ -57,7 +57,7 @@ public class RestCompanionFileController extends RestCytomineController {
     ) {
         log.debug("REST request to list companion file for abstract image {}", id);
         AbstractImage abstractImage = abstractImageRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractImage", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage" , id));
         return responseSuccess(companionFileService.list(abstractImage));
     }
 
@@ -67,7 +67,7 @@ public class RestCompanionFileController extends RestCytomineController {
     ) {
         log.debug("REST request to list companion file for uploaded file {}", id);
         UploadedFile uploadedFile = uploadedFileService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UploadedFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UploadedFile", id));
         return responseSuccess(companionFileService.list(uploadedFile));
     }
 
@@ -78,7 +78,7 @@ public class RestCompanionFileController extends RestCytomineController {
         log.debug("REST request to get companionfile {}", id);
         return companionFileService.find(id)
                 .map(this::responseSuccess)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractImage", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage" , id));
     }
 
     @PostMapping("/companionfile.json")
@@ -104,7 +104,7 @@ public class RestCompanionFileController extends RestCytomineController {
     public RedirectView download(@PathVariable Long id) throws IOException {
         log.debug("REST request to download companionfile");
         CompanionFile companionFile = companionFileService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("CompanionFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("CompanionFile", id));
         // TODO: in abstract image, there is no check fos download auth!?
         String url = imageServerService.downloadUri(companionFile);
         return new RedirectView(url);
@@ -115,7 +115,7 @@ public class RestCompanionFileController extends RestCytomineController {
     public ResponseEntity<String> showUploaderOfImage(@PathVariable Long id) {
         log.debug("REST request to show companionfile uploader");
         CompanionFile companionFile = companionFileService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("CompanionFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("CompanionFile", id));
         if (companionFile.getUploadedFile() !=null && companionFile.getUploadedFile().getUser()!=null) {
             return responseSuccess(companionFile.getUploadedFile().getUser());
         } else {

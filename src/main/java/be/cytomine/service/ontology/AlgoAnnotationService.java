@@ -27,6 +27,7 @@ import be.cytomine.domain.security.User;
 import be.cytomine.dto.AnnotationLight;
 import be.cytomine.dto.SimplifiedAnnotation;
 import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.exceptions.WrongArgumentException;
 import be.cytomine.repository.AlgoAnnotationListing;
@@ -200,12 +201,22 @@ public class AlgoAnnotationService extends ModelService {
         ImageInstance image = null;
 
         if (!jsonObject.isMissing("slice")) {
+
+            Object sliceId = jsonObject.get("slice");
             slice = sliceInstanceService.find(jsonObject.getJSONAttrLong("slice"))
-                    .orElseThrow(() -> new ObjectNotFoundException("SliceInstance with id " + jsonObject.get("slice")));
+                    .orElseThrow(() -> new ObjectNotFoundException(
+                            "SliceInstance with id " + sliceId,
+                            ErrorCode.NOT_FOUND_INSTANCE.getValue(),
+                            Map.of("instance", "SliceInstance", "id", sliceId)));
             image = slice.getImage();
         } else if (!jsonObject.isMissing("image")) {
+
+            Object imageId = jsonObject.get("image");
             image = imageInstanceRepository.findById(jsonObject.getJSONAttrLong("image"))
-                    .orElseThrow(() -> new ObjectNotFoundException("ImageInstance with id " + jsonObject.get("image")));
+                    .orElseThrow(() -> new ObjectNotFoundException(
+                            "ImageInstance with id " + imageId,
+                            ErrorCode.NOT_FOUND_INSTANCE.getValue(),
+                            Map.of("instance", "ImageInstance", "id", imageId)));
             slice = sliceCoordinatesService.getReferenceSlice(image);
 
         }

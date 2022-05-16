@@ -307,7 +307,7 @@ public class RestAnnotationDomainController extends RestCytomineController {
     private List getIncludedAnnotation(JsonObject params, List<String> propertiesToShow){
 
         ImageInstance image = imageInstanceService.find(params.getJSONAttrLong("image"))
-                .orElseThrow(() -> new ObjectNotFoundException("ImageInstance", params.getJSONAttrStr("image")));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance" , params.getJSONAttrStr("image")));
 
         //get area
         String geometry = params.getJSONAttrStr("geometry");

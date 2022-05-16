@@ -21,6 +21,7 @@ import be.cytomine.domain.image.ImageInstance;
 import be.cytomine.domain.image.SliceInstance;
 import be.cytomine.domain.security.SecUser;
 import be.cytomine.domain.social.LastUserPosition;
+import be.cytomine.exceptions.ErrorCode;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.CurrentUserService;
 import be.cytomine.service.dto.AreaDTO;
@@ -38,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Controller for user position
@@ -69,7 +71,9 @@ public class RestUserPositionController extends RestCytomineController {
     ) {
         log.debug("REST request add user position for imageinstance {id}");
         ImageInstance imageInstance =
-                imageInstanceService.find(id).orElseThrow(() -> new ObjectNotFoundException("ImageInstance", id));
+                imageInstanceService.find(id)
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance", id));
+
         SliceInstance referenceSlice = imageInstanceService.getReferenceSlice(imageInstance.getId());
         return add(imageInstance, referenceSlice, json);
     }
@@ -81,7 +85,8 @@ public class RestUserPositionController extends RestCytomineController {
     ) {
         log.debug("REST request add user position for sliceinstance {}", id);
         SliceInstance referenceSlice = sliceInstanceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance", id));
+
         return add(referenceSlice.getImage(), referenceSlice, json);
     }
 
@@ -114,12 +119,17 @@ public class RestUserPositionController extends RestCytomineController {
             @RequestParam(required = false) Long sliceId
     ) {
         ImageInstance imageInstance =
-                imageInstanceService.find(imageId).orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageId));
-        SecUser user = secUserService.find(userId).orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+                imageInstanceService.find(imageId)
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance", imageId));
+
+        SecUser user = secUserService.find(userId)
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("SecUser", userId));
+
         SliceInstance sliceInstance = null;
         if (sliceId!=null) {
             sliceInstance = sliceInstanceService.find(sliceId)
-                    .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", sliceId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance", sliceId));
+
         }
         return  responseSuccess(userPositionService.lastPositionByUser(imageInstance, sliceInstance, user, broadcast).map(LastUserPosition::toJsonObject).orElse(new JsonObject()));
     }
@@ -136,15 +146,19 @@ public class RestUserPositionController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "0") Long offset
     ) {
         ImageInstance imageInstance =
-                imageInstanceService.find(imageId).orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageId));
+                imageInstanceService.find(imageId)
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance", imageId));
+
         SecUser user = null;
         if (userId!=null) {
-            user = secUserService.find(userId).orElseThrow(() -> new ObjectNotFoundException("SecUser", userId));
+            user = secUserService.find(userId)
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("Project", userId));
         }
         SliceInstance sliceInstance = null;
         if (sliceId!=null) {
             sliceInstance = sliceInstanceService.find(sliceId)
-                    .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", sliceId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance", sliceId));
+
         }
         if (showDetails) {
             return responseSuccess(userPositionService.list(imageInstance, user, sliceInstance, afterThan, beforeThan, max.intValue(), offset.intValue()));
@@ -161,11 +175,13 @@ public class RestUserPositionController extends RestCytomineController {
             @RequestParam(required = false, defaultValue = "false") Boolean broadcast
     ) {
         ImageInstance imageInstance =
-                imageInstanceService.find(imageId).orElseThrow(() -> new ObjectNotFoundException("ImageInstance", imageId));
+                imageInstanceService.find(imageId)
+                        .orElseThrow(() -> ObjectNotFoundException.notFoundException("ImageInstance", imageId));
+
         SliceInstance sliceInstance = null;
         if (sliceId!=null) {
             sliceInstance = sliceInstanceService.find(sliceId)
-                    .orElseThrow(() -> new ObjectNotFoundException("SliceInstance", sliceId));
+                    .orElseThrow(() -> ObjectNotFoundException.notFoundException("SliceInstance", sliceId));
         }
         return responseSuccess(JsonObject.of("users", userPositionService.listOnlineUsersByImage(imageInstance, sliceInstance, broadcast)));
     }

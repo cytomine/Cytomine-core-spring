@@ -63,7 +63,7 @@ public class RestAbstractSliceController extends RestCytomineController {
     ) {
         log.debug("REST request to list abstract slice for image {}", id);
         AbstractImage abstractImage = abstractImageService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractImage", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractImage" , id));
         return responseSuccess(abstractSliceService.list(abstractImage));
     }
 
@@ -73,7 +73,7 @@ public class RestAbstractSliceController extends RestCytomineController {
     ) {
         log.debug("REST request to list abstract slice for image {}", id);
         UploadedFile uploadedFile = uploadedFileService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("UploadedFile", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("UploadedFile", id));
         return responseSuccess(abstractSliceService.list(uploadedFile));
     }
 
@@ -85,7 +85,7 @@ public class RestAbstractSliceController extends RestCytomineController {
         log.debug("REST request to get abstract slice {}", id);
         return abstractSliceService.find(id)
                 .map(this::responseSuccess)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
     }
 
 
@@ -98,10 +98,10 @@ public class RestAbstractSliceController extends RestCytomineController {
     ) {
         log.debug("REST request to get abstract slice for  image {} and coordinates {}-{}-{}", id, channel, zStack, time);
         AbstractImage abstractImage = abstractImageService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
 
         AbstractSlice abstractSlice = abstractSliceService.find(abstractImage, channel,zStack, time)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id + "[" + channel + "-" + zStack + "-" + time + "]"));
+                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice [" + channel + "-" + zStack + "-" + time + "]", id));
         return responseSuccess(abstractSlice);
     }
     
@@ -162,7 +162,7 @@ public class RestAbstractSliceController extends RestCytomineController {
         thumbParameter.setRefresh(refresh);
 
         AbstractSlice abstractSlice = abstractSliceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
         responseByteArray(imageServerService.thumb(abstractSlice, thumbParameter), format);
     }
 
@@ -198,7 +198,7 @@ public class RestAbstractSliceController extends RestCytomineController {
     ) throws UnsupportedEncodingException, ParseException {
         log.debug("REST request to get associated image of a abstract slice");
         AbstractSlice abstractSlice = abstractSliceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
 
         CropParameter cropParameter = new CropParameter();
         cropParameter.setGeometry(geometry);
@@ -250,7 +250,7 @@ public class RestAbstractSliceController extends RestCytomineController {
         windowParameter.setWithExterior(withExterior);
         windowParameter.setFormat(format);
         AbstractSlice abstractSlice = abstractSliceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
         String url = imageServerService.windowUrl(abstractSlice, windowParameter);
         return responseSuccess(JsonObject.of("url", url));
     }
@@ -274,7 +274,7 @@ public class RestAbstractSliceController extends RestCytomineController {
         windowParameter.setWithExterior(withExterior);
         windowParameter.setFormat(format);
         AbstractSlice abstractSlice = abstractSliceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
         responseByteArray(imageServerService.window(abstractSlice, windowParameter), format);
     }
 
@@ -296,7 +296,7 @@ public class RestAbstractSliceController extends RestCytomineController {
         windowParameter.setWithExterior(false);
         windowParameter.setFormat(format);
         AbstractSlice abstractSlice = abstractSliceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
         String url = imageServerService.windowUrl(abstractSlice, windowParameter);
         return responseSuccess(JsonObject.of("url", url));
     }
@@ -319,7 +319,7 @@ public class RestAbstractSliceController extends RestCytomineController {
         windowParameter.setWithExterior(false);
         windowParameter.setFormat(format);
         AbstractSlice abstractSlice = abstractSliceService.find(id)
-                .orElseThrow(() -> new ObjectNotFoundException("AbstractSlice", id));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("AbstractSlice" , id));
         responseByteArray(imageServerService.window(abstractSlice, windowParameter), format);
     }
 

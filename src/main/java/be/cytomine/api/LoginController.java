@@ -103,7 +103,7 @@ public class LoginController extends RestCytomineController {
         log.debug("REST request to retrieve username");
 
         User user = userRepository.findByEmailLikeIgnoreCase(formData.getFirst("j_email"))
-                .orElseThrow(() -> new ObjectNotFoundException("User", JsonObject.of("email", formData.getFirst("j_email")).toJsonString()));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", JsonObject.of("email", formData.getFirst("j_email")).toJsonString()));
         notificationService.notifyForgotUsername(user);
         return responseSuccess(JsonObject.of("message","Check your inbox"));
     }
@@ -147,7 +147,7 @@ public class LoginController extends RestCytomineController {
             @RequestParam String tokenKey
     ) throws MessagingException {
         User user = userRepository.findByUsernameLikeIgnoreCaseAndEnabledIsTrue(username)
-                .orElseThrow(() -> new ObjectNotFoundException("User", username));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", username));
 
         Optional<AuthWithToken> authToken = authWithTokenRepository.findByTokenKeyAndUser(tokenKey, user);
         Optional<ForgotPasswordToken> forgotPasswordToken = forgotPasswordTokenRepository.findByTokenKeyAndUser(tokenKey, user);
@@ -181,7 +181,7 @@ public class LoginController extends RestCytomineController {
 
         Double validity = params.getJSONAttrDouble("validity", 60d);
         User user = userRepository.findByUsernameLikeIgnoreCaseAndEnabledIsTrue(username)
-                .orElseThrow(() -> new ObjectNotFoundException("User", username));
+                .orElseThrow(() -> ObjectNotFoundException.notFoundException("User", username));
 
         String tokenKey = UUID.randomUUID().toString();
         AuthWithToken token = new AuthWithToken();
