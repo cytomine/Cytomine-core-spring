@@ -8,7 +8,7 @@ import java.time.Month;
 @Slf4j
 public class EndOfLifeUtils {
 
-    public static LocalDateTime END_OF_LIFE = LocalDateTime.of(2024, Month.JANUARY, 15, 0 , 0, 0);
+    public static LocalDateTime END_OF_LIFE = LocalDateTime.of(2026, Month.FEBRUARY, 15, 0 , 0, 0);
 
     public static void blockApplicationIfEndOfLifeHasBeenReached() {
         log.info("Cytomine end of life: " + END_OF_LIFE);
