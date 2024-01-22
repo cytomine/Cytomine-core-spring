@@ -197,6 +197,11 @@ public class ImageInstanceService extends ModelService {
         return imageInstanceRepository.findTopByProjectAndCreatedGreaterThanOrderByCreatedAsc(imageInstance.getProject(), imageInstance.getCreated());
     }
 
+    public List<ImageInstance> listByAbstractImage(AbstractImage ai) {
+        securityACLService.check(ai, READ);
+        return imageInstanceRepository.findAllByBaseImage(ai);
+    }
+
     public List<ImageInstance> listByProject(Project project) {
         securityACLService.check(project, READ);
         return imageInstanceRepository.findAllByProject(project);
@@ -566,12 +571,12 @@ public class ImageInstanceService extends ModelService {
         sort = " ORDER BY " + sortedProperty;
         sort += (sortDirection.equals("desc")) ? " DESC " : " ASC ";
 
-        if (joinAI) {
+        if (joinAI || joinMime) {
             select += ", " + ABSTRACT_IMAGE_COLUMNS_FOR_SEARCH.stream().map(x -> abstractImageAlias + "." + x).collect(Collectors.joining(",")) + " ";
             from += "JOIN abstract_image "+ abstractImageAlias + " ON " + abstractImageAlias + ".id = " + imageInstanceAlias + ".base_image_id ";
         }
         if (joinMime) {
-            select += ", " + mimeAlias + ".* ";
+            select += ", " + mimeAlias + ".content_type ";
             from += "JOIN uploaded_file  " + mimeAlias + " ON " + mimeAlias + ".id = " + abstractImageAlias + ".uploaded_file_id ";
         }
 

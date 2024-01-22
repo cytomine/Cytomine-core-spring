@@ -87,7 +87,7 @@ application:
       token-validity-in-seconds-for-remember-me: 2592000
       token-validity-in-seconds-for-short-term: 300
 
-
+  elasticsearchServerURL: localhost:9200
 
   defaultLanguage: ENGLISH
   imageServerURL: [http://ims.cytomine.local]

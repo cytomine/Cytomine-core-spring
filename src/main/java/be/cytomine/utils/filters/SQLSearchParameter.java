@@ -17,6 +17,8 @@ package be.cytomine.utils.filters;
 */
 
 import be.cytomine.domain.CytomineDomain;
+import be.cytomine.domain.image.AbstractImage;
+import be.cytomine.domain.image.ImageInstance;
 import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.EntityManager;
@@ -55,6 +57,16 @@ public class SQLSearchParameter {
                 translated.add(parameter);
             }
 
+            List classes = Arrays.asList(AbstractImage.class, ImageInstance.class);
+            if (parameter.property.equals("include") && classes.contains(domain)) {
+                result.add(new SearchParameterEntry(
+                    domain == AbstractImage.class ? "id" : "base_image_id",
+                    parameter.operation,
+                    convertSearchParameter(Long.class, parameter.getValue(), entityManager))
+                );
+
+                translated.add(parameter);
+            }
         }
 
         searchParameters.removeAll(translated);

@@ -93,6 +93,8 @@ application:
       token-validity-in-seconds-for-remember-me: ${TOKEN_VALIDITY_IN_SECONDS_REMEMBER_ME:2592000} 
       token-validity-in-seconds-for-short-term: ${TOKEN_VALIDITY_IN_SECONDS_SHORT_TERM:240}
 
+  elasticsearchServerURL: ${ELASTICSEARCH_HOST:localhost}:${ELASTICSEARCH_PORT:9200}
+
   imageServerURL:
     - ${IMAGE_SERVER_URL:#{'http://ims.cytomine.local'}}
   

@@ -18,6 +18,7 @@ package be.cytomine.api.controller.image;
 
 import be.cytomine.api.controller.RestCytomineController;
 import be.cytomine.api.controller.utils.RequestParams;
+import be.cytomine.domain.image.AbstractImage;
 import be.cytomine.domain.image.ImageInstance;
 import be.cytomine.domain.image.SliceInstance;
 import be.cytomine.domain.project.Project;
@@ -28,6 +29,7 @@ import be.cytomine.exceptions.InvalidRequestException;
 import be.cytomine.exceptions.ObjectNotFoundException;
 import be.cytomine.service.CurrentUserService;
 import be.cytomine.service.dto.*;
+import be.cytomine.service.image.AbstractImageService;
 import be.cytomine.service.image.ImageInstanceService;
 import be.cytomine.service.image.SliceCoordinatesService;
 import be.cytomine.service.middleware.ImageServerService;
@@ -53,6 +55,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RestImageInstanceController extends RestCytomineController {
 
+    private final AbstractImageService abstractImageService;
+
     private final ProjectService projectService;
 
     private final ImageInstanceService imageInstanceService;
@@ -60,7 +64,7 @@ public class RestImageInstanceController extends RestCytomineController {
     private final ImageServerService imageServerService;
 
     private final SecUserService secUserService;
-    
+
     private final SliceCoordinatesService sliceCoordinatesService;
 
     private final SecurityACLService securityACLService;
@@ -101,6 +105,16 @@ public class RestImageInstanceController extends RestCytomineController {
                     .orElseThrow(() -> new ObjectNotFoundException("SecUser", id));
         }
         return responseSuccess(imageInstanceService.listLight(secUser));
+    }
+
+    @GetMapping("/abstractimage/{id}/imageinstance.json")
+    public ResponseEntity<String> listByAbstractImage(@PathVariable Long id) {
+        log.debug("REST request to list images for abstract image {}", id);
+
+        AbstractImage ai = abstractImageService.find(id)
+            .orElseThrow(() -> new ObjectNotFoundException("AbstractImage", id));
+
+        return responseSuccess(imageInstanceService.listByAbstractImage(ai));
     }
 
     @GetMapping("/project/{id}/imageinstance.json")
@@ -516,7 +530,7 @@ public class RestImageInstanceController extends RestCytomineController {
         //TODO
         throw new CytomineMethodNotYetImplementedException("");
     }
-    
+
     // TODO
 
     @GetMapping("/project/{projectId}/bounds/imageinstance.json")

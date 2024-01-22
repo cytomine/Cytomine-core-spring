@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.6'
+	id 'org.springframework.boot' version '2.7.10'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'jacoco'
@@ -95,6 +95,10 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
 
+	// Elasticsearch
+	implementation('jakarta.json:jakarta.json-api:2.0.1')
+	implementation('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+	testImplementation('org.springframework:spring-webflux')
 }
 
 test {

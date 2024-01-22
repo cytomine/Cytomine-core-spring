@@ -18,11 +18,10 @@ package be.cytomine.domain.meta;
 
 import be.cytomine.domain.CytomineDomain;
 import be.cytomine.domain.GenericCytomineDomainContainer;
-import be.cytomine.exceptions.CytomineMethodNotYetImplementedException;
 import be.cytomine.utils.JsonObject;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -43,9 +42,11 @@ public class Property extends CytomineDomain {
 
     @NotNull
     @NotBlank
+    @Field(name = "domain_class_name")
     private String domainClassName;
 
     @NotNull
+    @Field(name = "domain_ident")
     private Long domainIdent;
 
     /**
