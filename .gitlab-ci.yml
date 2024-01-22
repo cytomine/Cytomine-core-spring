@@ -224,11 +224,15 @@ build-push-docker-image:
     - mkdir -p $HOME/.docker && echo $DOCKER_HUB_AUTH_CONFIG > $HOME/.docker/config.json
     - echo "Registry credentials configured at $HOME/.docker/config.json"
 
-    - echo "Pushing docker image ${DOCKER_IMAGE_NAME}:${CM_VERSION} and ${DOCKER_IMAGE_NAME}:latest"
+    - echo "Pushing docker image ${DOCKER_IMAGE_NAME}:${CM_VERSION}"
     - docker push ${DOCKER_IMAGE_NAME}:${CM_VERSION}
-    - docker push ${DOCKER_IMAGE_NAME}:latest
-    - echo "Successfully pushed docker image ${DOCKER_IMAGE_NAME}:${CM_VERSION} and ${DOCKER_IMAGE_NAME}:latest"
-
+    - echo "Successfully pushed docker image ${DOCKER_IMAGE_NAME}:${CM_VERSION}"
+    - | # If tag starts with "ce-"" push also the latest
+      if [ "${CM_VERSION}" =~ /^ce-.*$/ ]; then
+        echo "Pushing docker image ${DOCKER_IMAGE_NAME}:latest"
+        docker push ${DOCKER_IMAGE_NAME}:latest
+        echo "Successfully pushed docker image ${DOCKER_IMAGE_NAME}:latest"
+      fi
 
 #publish-jar:
 #  stage: publish
